@@ -1,4 +1,4 @@
-import { cos, sin, pi, abs, round, evaluate, re } from 'mathjs';
+import { cos, sin, pi, abs, round, re } from 'mathjs';
 
 export function calculateCurve(params) {
   const { curveType, a, b, n, func, operator } = params;
@@ -46,51 +46,47 @@ function calculateLimacon(a, b, func, operator) {
   return { data, period: re(2 * pi) };
 }
 
-export function extractWholeNumberPairs(data, tolerance = 0.01) {
-  const result = [];
-  for (const point of data) {
-    const rounded = round(point.r, 2);
-    if (abs(rounded - round(rounded)) < tolerance) {
-      const alreadyExists = result.some(
-        (p) => abs(p.theta - point.theta) < 0.001
-      );
-      if (!alreadyExists) {
-        result.push({
-          theta: point.theta,
-          r: round(rounded),
-        });
-      }
-    }
-  }
-  return result;
-}
-
-export function filterMinMidMax(data) {
+export function extractKeyPoints(data) {
   if (!data || data.length === 0) return [];
 
-  const uniqueRValues = [...new Set(data.map((d) => Math.round(d.r)))].sort(
-    (a, b) => a - b
-  );
+  let maxPt = data[0];
+  let minPt = data[0];
+  let zeroPt = data[0];
+  let minZeroDist = Infinity;
 
-  if (uniqueRValues.length <= 3) {
-    const keep = new Set(uniqueRValues);
-    return data.filter((d) => keep.has(Math.round(d.r)));
-  }
-
-  const minR = uniqueRValues[0];
-  const maxR = uniqueRValues[uniqueRValues.length - 1];
-  let midR = uniqueRValues[0];
-  let minDist = Infinity;
-  for (const r of uniqueRValues) {
-    const dist = Math.abs(r);
-    if (dist < minDist) {
-      minDist = dist;
-      midR = r;
+  for (const pt of data) {
+    if (pt.r > maxPt.r) maxPt = pt;
+    if (pt.r < minPt.r) minPt = pt;
+    const d = abs(pt.r);
+    if (d < minZeroDist) {
+      minZeroDist = d;
+      zeroPt = pt;
     }
   }
 
-  const keep = new Set([minR, midR, maxR]);
-  return data.filter((d) => keep.has(Math.round(d.r)));
+  const result = [];
+  const seen = new Set();
+
+  for (const pt of [minPt, zeroPt, maxPt]) {
+    const key = round(pt.theta, 4).toString();
+    if (!seen.has(key)) {
+      seen.add(key);
+      let label = '';
+      if (pt === minPt && pt.r < 0) label = 'Min';
+      else if (pt === maxPt && pt.r > 0) label = 'Max';
+      else label = 'Zero';
+      result.push({ theta: pt.theta, r: round(pt.r, 2), label });
+    }
+  }
+
+  return result.sort((a, b) => a.r - b.r);
+}
+
+export function formatPeriodLabel(period) {
+  const ratio = period / pi;
+  if (abs(ratio - 1) < 0.001) return 'π';
+  if (abs(ratio - 2) < 0.001) return '2π';
+  return ratio.toFixed(2) + 'π';
 }
 
 export function formatAngle(theta) {
@@ -102,13 +98,9 @@ export function formatAngle(theta) {
   if (abs(abs(ratio) - 2) < 0.001) return `${ratio > 0 ? '' : '-'}2π`;
   if (abs(abs(ratio) - 0.25) < 0.001) return `${ratio > 0 ? '' : '-'}π/4`;
   if (abs(abs(ratio) - 0.75) < 0.001) return `${ratio > 0 ? '' : '-'}3π/4`;
-  if (abs(abs(ratio) - 4/3) < 0.001) return `${ratio > 0 ? '' : '-'}4π/3`;
-  if (abs(abs(ratio) - 5/3) < 0.001) return `${ratio > 0 ? '' : '-'}5π/3`;
-  if (abs(abs(ratio) - 7/4) < 0.001) return `${ratio > 0 ? '' : '-'}7π/4`;
-  if (abs(abs(ratio) - 5/4) < 0.001) return `${ratio > 0 ? '' : '-'}5π/4`;
-  if (abs(abs(ratio) - 1/3) < 0.001) return `${ratio > 0 ? '' : '-'}π/3`;
-  if (abs(abs(ratio) - 2/3) < 0.001) return `${ratio > 0 ? '' : '-'}2π/3`;
-  if (abs(abs(ratio) - 1/6) < 0.001) return `${ratio > 0 ? '' : '-'}π/6`;
-  if (abs(abs(ratio) - 5/6) < 0.001) return `${ratio > 0 ? '' : '-'}5π/6`;
+  if (abs(abs(ratio) - 1 / 3) < 0.001) return `${ratio > 0 ? '' : '-'}π/3`;
+  if (abs(abs(ratio) - 2 / 3) < 0.001) return `${ratio > 0 ? '' : '-'}2π/3`;
+  if (abs(abs(ratio) - 1 / 6) < 0.001) return `${ratio > 0 ? '' : '-'}π/6`;
+  if (abs(abs(ratio) - 5 / 6) < 0.001) return `${ratio > 0 ? '' : '-'}5π/6`;
   return `${ratio.toFixed(2)}π`;
 }

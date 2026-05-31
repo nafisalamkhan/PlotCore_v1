@@ -223,11 +223,39 @@
   opacity: 0.5;
 }
 
-.viz-controls {
+/* ── Top Bar: Period badge + Progress + Controls ── */
+.viz-top-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.period-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 4px 12px;
+  flex-shrink: 0;
+}
+
+.period-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.period-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e1b4b;
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-style: italic;
 }
 
 .progress-bar-container {
@@ -236,6 +264,7 @@
   background: #e5e7eb;
   border-radius: 3px;
   overflow: hidden;
+  min-width: 60px;
 }
 
 .progress-bar-fill {
@@ -250,67 +279,79 @@
   color: #6b7280;
   min-width: 36px;
   text-align: right;
+  flex-shrink: 0;
 }
 
-/* ── Animation Control Buttons ── */
+/* ── Premium Control Buttons ── */
 .anim-buttons {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 12px;
-  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
-.anim-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid #d1d5db;
+.ctrl-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  background: #f9fafb;
-  font-size: 16px;
+  background: #ffffff;
+  color: #4b5563;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
-  color: #374151;
-  line-height: 1;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.anim-btn:hover:not(:disabled) {
+.ctrl-btn:hover:not(:disabled) {
+  border-color: #c7d2fe;
   background: #eef2ff;
-  border-color: #6366f1;
   color: #4f46e5;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
 }
 
-.anim-btn:disabled {
-  opacity: 0.4;
+.ctrl-btn:active:not(:disabled) {
+  transform: scale(0.93);
+}
+
+.ctrl-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-.anim-btn-play {
-  width: 42px;
-  height: 42px;
-  font-size: 18px;
+.ctrl-btn-play {
+  width: 38px;
+  height: 38px;
   background: #6366f1;
   border-color: #6366f1;
   color: white;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.25);
 }
 
-.anim-btn-play:hover:not(:disabled) {
+.ctrl-btn-play:hover:not(:disabled) {
   background: #4f46e5 !important;
   border-color: #4f46e5 !important;
   color: white !important;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.35) !important;
 }
 
-.anim-btn-play.playing {
+.ctrl-btn-play:active:not(:disabled) {
+  transform: scale(0.93) !important;
+}
+
+.ctrl-btn-play.is-playing {
   background: #f59e0b;
   border-color: #f59e0b;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
 }
 
-.anim-btn-play.playing:hover:not(:disabled) {
+.ctrl-btn-play.is-playing:hover:not(:disabled) {
   background: #d97706 !important;
   border-color: #d97706 !important;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35) !important;
 }
 
 /* ── Viz Grid: Cartesian + Table on left, Polar on right ── */
@@ -347,12 +388,12 @@
 }
 
 .graph-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 8px 12px;
+  padding: 7px 12px;
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -370,17 +411,18 @@
   border-radius: 4px;
 }
 
+/* ── Polar Container (fixed height, not dependent on parent) ── */
+.polar-container {
+  height: auto;
+}
+
 .polar-wrapper {
-  min-height: 500px;
+  min-height: 536px;
   width: 100%;
 }
 
-.polar-container {
-  height: 100%;
-}
-
-.polar-container .canvas-wrapper {
-  height: calc(100% - 35px);
+.polar-wrapper canvas {
+  max-width: 100%;
 }
 
 /* ── Data Table ── */
@@ -433,6 +475,22 @@
   color: #1e1b4b;
 }
 
+.data-table .point-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.point-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 .data-table .empty-msg {
   text-align: center;
   color: #9ca3af;
@@ -481,7 +539,11 @@
   }
 
   .polar-wrapper {
-    min-height: 350px;
+    min-height: 380px;
+  }
+
+  .polar-wrapper canvas {
+    height: 380px !important;
   }
 
   .table-scroll {
@@ -523,7 +585,16 @@
     text-align: center;
   }
 
+  .viz-top-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .polar-wrapper {
-    min-height: 280px;
+    min-height: 300px;
+  }
+
+  .polar-wrapper canvas {
+    height: 300px !important;
   }
 }

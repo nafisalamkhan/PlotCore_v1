@@ -1,14 +1,14 @@
 import { memo, useRef, useEffect } from 'react';
 import { formatAngle } from '../utils/calculations';
 
-function DataTable({ tableData, currentStep, allData, curveColor }) {
+function DataTable({ keyPoints, currentStep, allData, curveColor }) {
   const activeRowRef = useRef(null);
 
   let highlightedIdx = -1;
-  if (currentStep >= 0 && allData && allData.length > 0 && tableData.length > 0) {
+  if (currentStep >= 0 && allData && allData.length > 0 && keyPoints.length > 0) {
     const currentTheta = allData[currentStep].theta;
     let minDist = Infinity;
-    tableData.forEach((pt, i) => {
+    keyPoints.forEach((pt, i) => {
       const dist = Math.abs(pt.theta - currentTheta);
       if (dist < minDist) {
         minDist = dist;
@@ -19,31 +19,31 @@ function DataTable({ tableData, currentStep, allData, curveColor }) {
 
   useEffect(() => {
     if (activeRowRef.current) {
-      activeRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      activeRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [highlightedIdx]);
 
   return (
     <div className="graph-container table-container">
-      <div className="graph-title">Key Data Points</div>
+      <div className="graph-title">Key Points</div>
       <div className="table-scroll">
         <table className="data-table">
           <thead>
             <tr>
-              <th>#</th>
+              <th>Point</th>
               <th>r</th>
-              <th>θ</th>
+              <th>&theta;</th>
             </tr>
           </thead>
           <tbody>
-            {tableData.length === 0 ? (
+            {keyPoints.length === 0 ? (
               <tr>
                 <td colSpan={3} className="empty-msg">
-                  No whole-number r values found
+                  No key points found
                 </td>
               </tr>
             ) : (
-              tableData.map((pt, i) => (
+              keyPoints.map((pt, i) => (
                 <tr
                   key={i}
                   ref={i === highlightedIdx ? activeRowRef : null}
@@ -51,13 +51,19 @@ function DataTable({ tableData, currentStep, allData, curveColor }) {
                   style={
                     i === highlightedIdx
                       ? {
-                          backgroundColor: curveColor + '25',
-                          borderLeft: `4px solid ${curveColor}`,
+                          backgroundColor: curveColor + '20',
+                          borderLeft: `3px solid ${curveColor}`,
                         }
                       : {}
                   }
                 >
-                  <td>{i + 1}</td>
+                  <td className="point-label">
+                    <span
+                      className="point-dot"
+                      style={{ backgroundColor: curveColor }}
+                    />
+                    {pt.label}
+                  </td>
                   <td className="r-value">{pt.r}</td>
                   <td className="theta-value">{formatAngle(pt.theta)}</td>
                 </tr>

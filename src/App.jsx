@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import Header from './components/Header';
 import InputPanel from './components/InputPanel';
 import VisualizationPanel from './components/VisualizationPanel';
-import { calculateCurve, extractWholeNumberPairs, filterMinMidMax } from './utils/calculations';
+import { calculateCurve, extractKeyPoints, formatPeriodLabel } from './utils/calculations';
 import './App.css';
 
 const CURVE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#3b82f6'];
@@ -19,7 +19,8 @@ function App() {
     operator: '+',
   });
   const [allData, setAllData] = useState(null);
-  const [tableData, setTableData] = useState([]);
+  const [keyPoints, setKeyPoints] = useState([]);
+  const [period, setPeriod] = useState(null);
   const [currentStep, setCurrentStep] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
@@ -106,14 +107,14 @@ function App() {
     pause();
     setColorIndex((prev) => (prev + 1) % CURVE_COLORS.length);
 
-    const { data } = calculateCurve(params);
-    const rawTable = extractWholeNumberPairs(data);
-    const filtered = filterMinMidMax(rawTable);
+    const { data, period: p } = calculateCurve(params);
+    const points = extractKeyPoints(data);
 
     allDataRef.current = data;
     stepRef.current = 0;
     setAllData(data);
-    setTableData(filtered);
+    setKeyPoints(points);
+    setPeriod(p);
     setCurrentStep(0);
     setAnimProgress(0);
 
@@ -122,9 +123,7 @@ function App() {
 
   useEffect(() => {
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
@@ -141,7 +140,8 @@ function App() {
         />
         <VisualizationPanel
           allData={allData}
-          tableData={tableData}
+          keyPoints={keyPoints}
+          period={period}
           currentStep={currentStep}
           curveColor={curveColor}
           isPlaying={isPlaying}
