@@ -5,7 +5,7 @@ function DataTable({ tableData, currentStep, allData, curveColor }) {
   const activeRowRef = useRef(null);
 
   let highlightedIdx = -1;
-  if (currentStep >= 0 && allData && allData.length > 0) {
+  if (currentStep >= 0 && allData && allData.length > 0 && tableData.length > 0) {
     const currentTheta = allData[currentStep].theta;
     let minDist = Infinity;
     tableData.forEach((pt, i) => {
@@ -25,7 +25,7 @@ function DataTable({ tableData, currentStep, allData, curveColor }) {
 
   return (
     <div className="graph-container table-container">
-      <div className="graph-title">Data Points (Whole r Values)</div>
+      <div className="graph-title">Key Data Points</div>
       <div className="table-scroll">
         <table className="data-table">
           <thead>

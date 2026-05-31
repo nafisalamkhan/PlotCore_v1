@@ -65,6 +65,34 @@ export function extractWholeNumberPairs(data, tolerance = 0.01) {
   return result;
 }
 
+export function filterMinMidMax(data) {
+  if (!data || data.length === 0) return [];
+
+  const uniqueRValues = [...new Set(data.map((d) => Math.round(d.r)))].sort(
+    (a, b) => a - b
+  );
+
+  if (uniqueRValues.length <= 3) {
+    const keep = new Set(uniqueRValues);
+    return data.filter((d) => keep.has(Math.round(d.r)));
+  }
+
+  const minR = uniqueRValues[0];
+  const maxR = uniqueRValues[uniqueRValues.length - 1];
+  let midR = uniqueRValues[0];
+  let minDist = Infinity;
+  for (const r of uniqueRValues) {
+    const dist = Math.abs(r);
+    if (dist < minDist) {
+      minDist = dist;
+      midR = r;
+    }
+  }
+
+  const keep = new Set([minR, midR, maxR]);
+  return data.filter((d) => keep.has(Math.round(d.r)));
+}
+
 export function formatAngle(theta) {
   const ratio = theta / pi;
   if (abs(ratio) < 0.001) return '0';
@@ -78,9 +106,9 @@ export function formatAngle(theta) {
   if (abs(abs(ratio) - 5/3) < 0.001) return `${ratio > 0 ? '' : '-'}5π/3`;
   if (abs(abs(ratio) - 7/4) < 0.001) return `${ratio > 0 ? '' : '-'}7π/4`;
   if (abs(abs(ratio) - 5/4) < 0.001) return `${ratio > 0 ? '' : '-'}5π/4`;
+  if (abs(abs(ratio) - 1/3) < 0.001) return `${ratio > 0 ? '' : '-'}π/3`;
+  if (abs(abs(ratio) - 2/3) < 0.001) return `${ratio > 0 ? '' : '-'}2π/3`;
+  if (abs(abs(ratio) - 1/6) < 0.001) return `${ratio > 0 ? '' : '-'}π/6`;
+  if (abs(abs(ratio) - 5/6) < 0.001) return `${ratio > 0 ? '' : '-'}5π/6`;
   return `${ratio.toFixed(2)}π`;
-}
-
-export function roundPi(value) {
-  return Math.round(value / pi * 100) / 100;
 }

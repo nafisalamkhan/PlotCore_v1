@@ -2,10 +2,10 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import Header from './components/Header';
 import InputPanel from './components/InputPanel';
 import VisualizationPanel from './components/VisualizationPanel';
-import { calculateCurve, extractWholeNumberPairs } from './utils/calculations';
+import { calculateCurve, extractWholeNumberPairs, filterMinMidMax } from './utils/calculations';
 import './App.css';
 
-const CURVE_COLORS = ['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#8b5cf6'];
+const CURVE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#3b82f6'];
 const ANIMATION_INTERVAL_MS = 12;
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
   const [allData, setAllData] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
-  const [animating, setAnimating] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
   const [animProgress, setAnimProgress] = useState(0);
 
@@ -36,59 +36,97 @@ function App() {
     setCurveType(newParams.curveType);
   }, []);
 
-  const stopAnimation = useCallback(() => {
+  const pause = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    setAnimating(false);
+    setIsPlaying(false);
   }, []);
 
-  const startAnimation = useCallback((data) => {
-    stopAnimation();
-    allDataRef.current = data;
-    stepRef.current = 0;
-    setAllData(data);
-    setCurrentStep(0);
-    setAnimProgress(0);
-    setAnimating(true);
-
+  const play = useCallback(() => {
+    if (intervalRef.current) return;
+    setIsPlaying(true);
     intervalRef.current = setInterval(() => {
       stepRef.current += 1;
-      if (stepRef.current >= data.length - 1) {
-        stepRef.current = data.length - 1;
-        setCurrentStep(data.length - 1);
+      const len = allDataRef.current ? allDataRef.current.length : 0;
+      if (stepRef.current >= len - 1) {
+        stepRef.current = len - 1;
+        setCurrentStep(stepRef.current);
         setAnimProgress(100);
         clearInterval(intervalRef.current);
         intervalRef.current = null;
-        setAnimating(false);
+        setIsPlaying(false);
         return;
       }
       setCurrentStep(stepRef.current);
-      setAnimProgress((stepRef.current / (data.length - 1)) * 100);
+      setAnimProgress((stepRef.current / (len - 1)) * 100);
     }, ANIMATION_INTERVAL_MS);
-  }, [stopAnimation]);
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    if (intervalRef.current) {
+      pause();
+    } else {
+      play();
+    }
+  }, [pause, play]);
+
+  const stepForward = useCallback(() => {
+    pause();
+    const len = allDataRef.current ? allDataRef.current.length : 0;
+    stepRef.current = Math.min(stepRef.current + 1, len - 1);
+    setCurrentStep(stepRef.current);
+    setAnimProgress(len > 1 ? (stepRef.current / (len - 1)) * 100 : 0);
+  }, [pause]);
+
+  const stepBackward = useCallback(() => {
+    pause();
+    stepRef.current = Math.max(stepRef.current - 1, 0);
+    setCurrentStep(stepRef.current);
+    const len = allDataRef.current ? allDataRef.current.length : 0;
+    setAnimProgress(len > 1 ? (stepRef.current / (len - 1)) * 100 : 0);
+  }, [pause]);
+
+  const reset = useCallback(() => {
+    pause();
+    stepRef.current = 0;
+    setCurrentStep(0);
+    setAnimProgress(0);
+  }, [pause]);
+
+  const restart = useCallback(() => {
+    stepRef.current = 0;
+    setCurrentStep(0);
+    setAnimProgress(0);
+    requestAnimationFrame(() => play());
+  }, [play]);
 
   const handleGenerate = useCallback(() => {
-    stopAnimation();
+    pause();
     setColorIndex((prev) => (prev + 1) % CURVE_COLORS.length);
 
     const { data } = calculateCurve(params);
-    const table = extractWholeNumberPairs(data);
+    const rawTable = extractWholeNumberPairs(data);
+    const filtered = filterMinMidMax(rawTable);
 
+    allDataRef.current = data;
+    stepRef.current = 0;
     setAllData(data);
-    setTableData(table);
+    setTableData(filtered);
     setCurrentStep(0);
     setAnimProgress(0);
 
-    requestAnimationFrame(() => {
-      startAnimation(data);
-    });
-  }, [params, stopAnimation, startAnimation]);
+    requestAnimationFrame(() => play());
+  }, [params, pause, play]);
 
   useEffect(() => {
-    return () => stopAnimation();
-  }, [stopAnimation]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="app">
@@ -99,15 +137,20 @@ function App() {
           params={params}
           onParamsChange={handleParamsChange}
           onGenerate={handleGenerate}
-          disabled={animating}
+          disabled={isPlaying}
         />
         <VisualizationPanel
           allData={allData}
           tableData={tableData}
           currentStep={currentStep}
           curveColor={curveColor}
-          animating={animating}
+          isPlaying={isPlaying}
           animProgress={animProgress}
+          onStepForward={stepForward}
+          onStepBackward={stepBackward}
+          onReset={reset}
+          onRestart={restart}
+          onTogglePlay={togglePlay}
         />
       </main>
     </div>

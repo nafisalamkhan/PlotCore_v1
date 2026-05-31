@@ -93,16 +93,19 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
         </div>
       </div>
 
-      <div className="formula-display">
-        {curveType === 'rose' ? (
-          <span>r = {params.a} · {params.func}({params.n}θ)</span>
-        ) : (
-          <span>r = {params.a} {params.operator} {params.b} · {params.func}(θ)</span>
-        )}
+      <div className="formula-box">
+        <span className="formula-label">Equation:</span>
+        <span className="formula-equation">
+          {curveType === 'rose' ? (
+            <>r = {params.a}&thinsp;·&thinsp;{params.func}({params.n}&theta;)</>
+          ) : (
+            <>r = {params.a}&thinsp;{params.operator}&thinsp;{params.b}&thinsp;·&thinsp;{params.func}(&theta;)</>
+          )}
+        </span>
       </div>
 
       <button className="generate-btn" onClick={onGenerate} disabled={disabled}>
-        {disabled ? 'Animating...' : '▶ Generate & Animate'}
+        {disabled ? '⏳ Animating...' : '▶ Generate & Animate'}
       </button>
     </div>
   );
