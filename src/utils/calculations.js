@@ -1,4 +1,4 @@
-import { cos, sin, pi, abs, round, evaluate, re } from 'mathjs';
+import { cos, sin, pi, abs, round, re } from 'mathjs';
 
 export function calculateCurve(params) {
   const { curveType, a, b, n, func, operator } = params;
@@ -46,51 +46,76 @@ function calculateLimacon(a, b, func, operator) {
   return { data, period: re(2 * pi) };
 }
 
-export function extractWholeNumberPairs(data, tolerance = 0.01) {
-  const result = [];
-  for (const point of data) {
-    const rounded = round(point.r, 2);
-    if (abs(rounded - round(rounded)) < tolerance) {
-      const alreadyExists = result.some(
-        (p) => abs(p.theta - point.theta) < 0.001
-      );
-      if (!alreadyExists) {
-        result.push({
-          theta: point.theta,
-          r: round(rounded),
-        });
-      }
-    }
-  }
-  return result;
-}
-
-export function filterMinMidMax(data) {
+export function extractKeyPoints(data) {
   if (!data || data.length === 0) return [];
 
-  const uniqueRValues = [...new Set(data.map((d) => Math.round(d.r)))].sort(
-    (a, b) => a - b
-  );
+  const raw = [];
+  const eps = 0.005;
 
-  if (uniqueRValues.length <= 3) {
-    const keep = new Set(uniqueRValues);
-    return data.filter((d) => keep.has(Math.round(d.r)));
-  }
-
-  const minR = uniqueRValues[0];
-  const maxR = uniqueRValues[uniqueRValues.length - 1];
-  let midR = uniqueRValues[0];
-  let minDist = Infinity;
-  for (const r of uniqueRValues) {
-    const dist = Math.abs(r);
-    if (dist < minDist) {
-      minDist = dist;
-      midR = r;
+  // Zero crossings: sign change or zero boundary between consecutive points
+  for (let i = 1; i < data.length; i++) {
+    const prev = data[i - 1];
+    const curr = data[i];
+    if (prev.r * curr.r <= 0 && !(prev.r === 0 && curr.r === 0)) {
+      const pt = Math.abs(prev.r) <= Math.abs(curr.r) ? prev : curr;
+      raw.push({ theta: pt.theta, r: 0, label: 'Zero' });
     }
   }
 
-  const keep = new Set([minR, midR, maxR]);
-  return data.filter((d) => keep.has(Math.round(d.r)));
+  // Local extrema: compare with neighbors
+  for (let i = 1; i < data.length - 1; i++) {
+    const prev = data[i - 1];
+    const curr = data[i];
+    const next = data[i + 1];
+    if (curr.r > prev.r && curr.r > next.r) {
+      raw.push({ theta: curr.theta, r: round(curr.r, 2), label: 'Max' });
+    }
+    if (curr.r < prev.r && curr.r < next.r) {
+      raw.push({ theta: curr.theta, r: round(curr.r, 2), label: 'Min' });
+    }
+  }
+
+  // Boundary check: first and last points may be extrema (periodic wrapping)
+  if (data.length >= 3) {
+    const first = data[0], second = data[1], last = data[data.length - 1];
+    if (first.r > second.r && first.r > last.r) {
+      raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Max' });
+    }
+    if (first.r < second.r && first.r < last.r) {
+      raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Min' });
+    }
+    if (last.r > data[data.length - 2].r && last.r > first.r) {
+      raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Max' });
+    }
+    if (last.r < data[data.length - 2].r && last.r < first.r) {
+      raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Min' });
+    }
+  }
+
+  // Deduplicate: merge points with very close theta
+  const sorted = raw.sort((a, b) => a.theta - b.theta);
+  const deduped = [];
+
+  for (const pt of sorted) {
+    const last = deduped[deduped.length - 1];
+    if (last && Math.abs(pt.theta - last.theta) < eps) {
+      if (pt.label === 'Zero') {
+        last.label = 'Zero';
+        last.r = 0;
+      }
+    } else {
+      deduped.push({ ...pt });
+    }
+  }
+
+  return deduped;
+}
+
+export function formatPeriodLabel(period) {
+  const ratio = period / pi;
+  if (abs(ratio - 1) < 0.001) return 'π';
+  if (abs(ratio - 2) < 0.001) return '2π';
+  return ratio.toFixed(2) + 'π';
 }
 
 export function formatAngle(theta) {
@@ -102,13 +127,9 @@ export function formatAngle(theta) {
   if (abs(abs(ratio) - 2) < 0.001) return `${ratio > 0 ? '' : '-'}2π`;
   if (abs(abs(ratio) - 0.25) < 0.001) return `${ratio > 0 ? '' : '-'}π/4`;
   if (abs(abs(ratio) - 0.75) < 0.001) return `${ratio > 0 ? '' : '-'}3π/4`;
-  if (abs(abs(ratio) - 4/3) < 0.001) return `${ratio > 0 ? '' : '-'}4π/3`;
-  if (abs(abs(ratio) - 5/3) < 0.001) return `${ratio > 0 ? '' : '-'}5π/3`;
-  if (abs(abs(ratio) - 7/4) < 0.001) return `${ratio > 0 ? '' : '-'}7π/4`;
-  if (abs(abs(ratio) - 5/4) < 0.001) return `${ratio > 0 ? '' : '-'}5π/4`;
-  if (abs(abs(ratio) - 1/3) < 0.001) return `${ratio > 0 ? '' : '-'}π/3`;
-  if (abs(abs(ratio) - 2/3) < 0.001) return `${ratio > 0 ? '' : '-'}2π/3`;
-  if (abs(abs(ratio) - 1/6) < 0.001) return `${ratio > 0 ? '' : '-'}π/6`;
-  if (abs(abs(ratio) - 5/6) < 0.001) return `${ratio > 0 ? '' : '-'}5π/6`;
+  if (abs(abs(ratio) - 1 / 3) < 0.001) return `${ratio > 0 ? '' : '-'}π/3`;
+  if (abs(abs(ratio) - 2 / 3) < 0.001) return `${ratio > 0 ? '' : '-'}2π/3`;
+  if (abs(abs(ratio) - 1 / 6) < 0.001) return `${ratio > 0 ? '' : '-'}π/6`;
+  if (abs(abs(ratio) - 5 / 6) < 0.001) return `${ratio > 0 ? '' : '-'}5π/6`;
   return `${ratio.toFixed(2)}π`;
 }

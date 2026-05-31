@@ -29,10 +29,9 @@ function formatPi(val) {
   return (val / Math.PI).toFixed(2) + 'π';
 }
 
-function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
+function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
   const canvasRef = useRef(null);
   const hoverRef = useRef(null);
-  const mouseRef = useRef({ x: -1, y: -1 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -51,7 +50,7 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
       ctx.scale(dpr, dpr);
-      padding = { top: 20, right: 20, bottom: 40, left: 50 };
+      padding = { top: 24, right: 20, bottom: 40, left: 52 };
       plotW = width - padding.left - padding.right;
       plotH = height - padding.top - padding.bottom;
     }
@@ -116,22 +115,21 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
       ctx.font = 'bold 11px "SF Mono", "Cascadia Code", "Consolas", monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      for (let i = 0; i <= numThetaTicks; i++) {
-        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaTicks);
+      const numThetaLabels = 8;
+      for (let i = 0; i <= numThetaLabels; i++) {
+        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaLabels);
         const x = toX(theta, thetaMin, thetaMax);
-        const label = formatPi(theta);
-        ctx.fillText(label, x, height - padding.bottom + 8);
+        ctx.fillText(formatPi(theta), x, height - padding.bottom + 8);
       }
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-      ctx.fillText('θ', width - padding.right, height - padding.bottom + 18);
+      ctx.fillText('\u03B8', width - padding.right, height - padding.bottom + 18);
 
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
       for (let r = -Math.floor(rRange); r <= Math.floor(rRange); r++) {
         if (r === 0) continue;
-        const y = toY(r, rRange);
-        ctx.fillText(r.toString(), padding.left - 8, y);
+        ctx.fillText(r.toString(), padding.left - 8, toY(r, rRange));
       }
       ctx.fillText('0', padding.left - 8, toY(0, rRange));
       ctx.textAlign = 'left';
@@ -139,18 +137,16 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
       ctx.fillText('r', padding.left - 5, padding.top - 2);
 
       const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-      gradient.addColorStop(0, curveColor + '60');
-      gradient.addColorStop(1, curveColor + '10');
+      gradient.addColorStop(0, curveColor + '50');
+      gradient.addColorStop(1, curveColor + '08');
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.moveTo(toX(allData[0].theta, thetaMin, thetaMax), padding.top + plotH / 2);
       const step = Math.max(1, Math.floor(allData.length / plotW));
       for (let i = 0; i < allData.length; i += step) {
-        const d = allData[i];
-        ctx.lineTo(toX(d.theta, thetaMin, thetaMax), toY(d.r, rRange));
+        ctx.lineTo(toX(allData[i].theta, thetaMin, thetaMax), toY(allData[i].r, rRange));
       }
-      const last = allData[allData.length - 1];
-      ctx.lineTo(toX(last.theta, thetaMin, thetaMax), padding.top + plotH / 2);
+      ctx.lineTo(toX(allData[allData.length - 1].theta, thetaMin, thetaMax), padding.top + plotH / 2);
       ctx.closePath();
       ctx.fill();
 
@@ -162,24 +158,9 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
       ctx.beginPath();
       ctx.moveTo(toX(allData[0].theta, thetaMin, thetaMax), toY(allData[0].r, rRange));
       for (let i = 1; i <= endIdx; i++) {
-        const d = allData[i];
-        ctx.lineTo(toX(d.theta, thetaMin, thetaMax), toY(d.r, rRange));
+        ctx.lineTo(toX(allData[i].theta, thetaMin, thetaMax), toY(allData[i].r, rRange));
       }
       ctx.stroke();
-
-      ctx.strokeStyle = curveColor + '40';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      if (endIdx < allData.length - 1) {
-        ctx.beginPath();
-        ctx.moveTo(toX(allData[endIdx].theta, thetaMin, thetaMax), toY(allData[endIdx].r, rRange));
-        for (let i = endIdx + 1; i < allData.length; i += step) {
-          const d = allData[i];
-          ctx.lineTo(toX(d.theta, thetaMin, thetaMax), toY(d.r, rRange));
-        }
-        ctx.stroke();
-      }
-      ctx.setLineDash([]);
 
       if (currentStep >= 0 && currentStep < allData.length) {
         const cp = allData[currentStep];
@@ -197,7 +178,7 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(cx, padding.top + plotH / 2);
-        ctx.strokeStyle = curveColor + '60';
+        ctx.strokeStyle = curveColor + '50';
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.stroke();
@@ -206,23 +187,24 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
         ctx.beginPath();
         ctx.moveTo(padding.left, cy);
         ctx.lineTo(cx, cy);
-        ctx.strokeStyle = curveColor + '60';
+        ctx.strokeStyle = curveColor + '50';
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.stroke();
         ctx.setLineDash([]);
       }
 
-      if (tableData && tableData.length > 0) {
-        tableData.forEach((pt) => {
+      if (keyPoints && keyPoints.length > 0) {
+        keyPoints.forEach((pt) => {
           const tx = toX(pt.theta, thetaMin, thetaMax);
           const ty = toY(pt.r, rRange);
+
           ctx.beginPath();
-          ctx.arc(tx, ty, 4, 0, 2 * Math.PI);
-          ctx.fillStyle = curveColor + '80';
+          ctx.arc(tx, ty, 5, 0, 2 * Math.PI);
+          ctx.fillStyle = curveColor;
           ctx.fill();
-          ctx.strokeStyle = curveColor;
-          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
           ctx.stroke();
         });
       }
@@ -239,21 +221,21 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        const tooltipText = `θ = ${formatPi(hoverTheta)}, r = ${hoverR.toFixed(2)}`;
+        const tooltipText = `\u03B8 = ${formatPi(hoverTheta)}, r = ${hoverR.toFixed(2)}`;
         ctx.font = '12px "SF Mono", "Cascadia Code", consolas, monospace';
         const textWidth = ctx.measureText(tooltipText).width;
-        const tooltipX = Math.min(hx + 12, width - textWidth - 20);
-        const tooltipY = Math.max(hy - 30, 10);
+        const toX2 = Math.min(hx + 12, width - textWidth - 20);
+        const toY2 = Math.max(hy - 30, 10);
 
         ctx.fillStyle = 'rgba(31, 41, 55, 0.9)';
         ctx.beginPath();
-        ctx.roundRect(tooltipX - 6, tooltipY - 4, textWidth + 16, 22, 4);
+        ctx.roundRect(toX2 - 6, toY2 - 4, textWidth + 16, 22, 4);
         ctx.fill();
 
         ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
-        ctx.fillText(tooltipText, tooltipX + 2, tooltipY + 7);
+        ctx.fillText(tooltipText, toX2 + 2, toY2 + 7);
       }
     }
 
@@ -283,8 +265,7 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
         }
       }
 
-      const normDist = Math.sqrt(minDist);
-      if (normDist > rRange * 0.3) return null;
+      if (Math.sqrt(minDist) > rRange * 0.3) return null;
       return nearest;
     }
 
@@ -292,15 +273,9 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
-      mouseRef.current = { x: mx, y: my };
-
       const pt = findNearestPoint(mx, my);
-      if (pt) {
-        hoverRef.current = pt;
-      } else {
-        hoverRef.current = null;
-      }
-      draw(hoverRef.current ? hoverRef.current.theta : null, hoverRef.current ? hoverRef.current.r : null);
+      hoverRef.current = pt;
+      draw(pt ? pt.theta : null, pt ? pt.r : null);
     }
 
     function handleMouseLeave() {
@@ -315,14 +290,14 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
     function handleResize() {
-      const newRect = canvas.parentElement.getBoundingClientRect();
-      width = newRect.width - 40;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      width = rect.width - 40;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
       ctx.scale(dpr, dpr);
-      padding = { top: 20, right: 20, bottom: 40, left: 50 };
+      padding = { top: 24, right: 20, bottom: 40, left: 52 };
       plotW = width - padding.left - padding.right;
       plotH = height - padding.top - padding.bottom;
       const pt = hoverRef.current;
@@ -336,11 +311,11 @@ function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
       window.removeEventListener('resize', handleResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allData, currentStep, tableData, curveColor]);
+  }, [allData, currentStep, keyPoints, curveColor]);
 
   return (
     <div className="graph-container">
-      <div className="graph-title">Cartesian Plot (r vs θ) — hover to inspect points</div>
+      <div className="graph-title">Cartesian Plot (r vs &theta;) &mdash; hover to inspect</div>
       <div className="canvas-wrapper">
         <canvas ref={canvasRef} />
       </div>
