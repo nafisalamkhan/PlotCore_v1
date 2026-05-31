@@ -7,34 +7,31 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
   }, [params, onParamsChange]);
 
   const handleCurveTypeChange = useCallback((type) => {
-    onParamsChange({
-      ...params,
-      curveType: type,
-    });
+    onParamsChange({ ...params, curveType: type });
   }, [params, onParamsChange]);
 
   return (
     <div className="input-panel">
+      <div className="input-section-label">Curve Type</div>
       <div className="curve-tabs">
         <button
           className={`tab-btn ${curveType === 'rose' ? 'active' : ''}`}
           onClick={() => handleCurveTypeChange('rose')}
         >
-          <span className="tab-icon">🌹</span>
-          Rose Petals
+          Rose
         </button>
         <button
           className={`tab-btn ${curveType === 'limacon' ? 'active' : ''}`}
           onClick={() => handleCurveTypeChange('limacon')}
         >
-          <span className="tab-icon">💧</span>
-          Limaçons
+          Limaçon
         </button>
       </div>
 
-      <div className="params-grid">
-        <div className="param-group">
-          <label>a =</label>
+      <div className="input-section-label">Parameters</div>
+      <div className="params-group">
+        <div className="param-row">
+          <label>A</label>
           <input
             type="number"
             step="0.1"
@@ -46,8 +43,8 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
         </div>
 
         {curveType === 'rose' && (
-          <div className="param-group">
-            <label>n =</label>
+          <div className="param-row">
+            <label>N</label>
             <input
               type="number"
               step="1"
@@ -57,14 +54,13 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
               onChange={handleChange('n')}
               disabled={disabled}
             />
-            <span className="param-hint">(integer 1–12)</span>
           </div>
         )}
 
         {curveType === 'limacon' && (
           <>
-            <div className="param-group">
-              <label>b =</label>
+            <div className="param-row">
+              <label>B</label>
               <input
                 type="number"
                 step="0.1"
@@ -74,7 +70,7 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
                 disabled={disabled}
               />
             </div>
-            <div className="param-group">
+            <div className="param-row">
               <label>Op</label>
               <select value={params.operator} onChange={handleChange('operator')} disabled={disabled}>
                 <option value="+">+</option>
@@ -84,8 +80,8 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
           </>
         )}
 
-        <div className="param-group">
-          <label>Func</label>
+        <div className="param-row">
+          <label>Fn</label>
           <select value={params.func} onChange={handleChange('func')} disabled={disabled}>
             <option value="cos">cos</option>
             <option value="sin">sin</option>
@@ -94,7 +90,7 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
       </div>
 
       <div className="formula-box">
-        <span className="formula-label">Equation:</span>
+        <span className="formula-label">Equation</span>
         <span className="formula-equation">
           {curveType === 'rose' ? (
             <>r = {params.a}&thinsp;·&thinsp;{params.func}({params.n}&theta;)</>
@@ -105,7 +101,7 @@ function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled })
       </div>
 
       <button className="generate-btn" onClick={onGenerate} disabled={disabled}>
-        {disabled ? '⏳ Animating...' : '▶ Generate & Animate'}
+        {disabled ? 'Animate…' : 'Generate'}
       </button>
     </div>
   );

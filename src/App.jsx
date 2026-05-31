@@ -5,7 +5,7 @@ import VisualizationPanel from './components/VisualizationPanel';
 import { calculateCurve, extractKeyPoints } from './utils/calculations';
 import './App.css';
 
-const CURVE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#3b82f6'];
+const CURVE_COLORS = ['#66fcf1', '#b026ff', '#ff6b6b', '#ffd93d', '#6bcbff'];
 const ANIMATION_INTERVAL_MS = 12;
 
 function getInitialTheme() {
@@ -67,8 +67,10 @@ function App() {
     if (intervalRef.current) return;
     setIsPlaying(true);
     intervalRef.current = setInterval(() => {
-      stepRef.current += 1;
       const len = allDataRef.current ? allDataRef.current.length : 0;
+      if (len < 2) return;
+      const skip = Math.max(1, Math.floor(len / 360));
+      stepRef.current += skip;
       if (stepRef.current >= len - 1) {
         stepRef.current = len - 1;
         setCurrentStep(stepRef.current);

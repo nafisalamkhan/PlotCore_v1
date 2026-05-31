@@ -2,7 +2,7 @@ import { memo, useRef, useEffect } from 'react';
 import { formatAngle } from '../utils/calculations';
 
 function DataTable({ keyPoints, currentStep, allData, curveColor }) {
-  const activeRowRef = useRef(null);
+  const activeCellRef = useRef(null);
   const scrollRef = useRef(null);
 
   let highlightedIdx = -1;
@@ -19,15 +19,15 @@ function DataTable({ keyPoints, currentStep, allData, curveColor }) {
   }
 
   useEffect(() => {
-    if (activeRowRef.current && scrollRef.current) {
+    if (activeCellRef.current && scrollRef.current) {
       const container = scrollRef.current;
-      const row = activeRowRef.current;
-      const rowTop = row.offsetTop;
-      const rowBot = rowTop + row.offsetHeight;
-      const cScroll = container.scrollTop;
-      const cHeight = container.clientHeight;
-      if (rowTop < cScroll || rowBot > cScroll + cHeight) {
-        container.scrollTop = rowTop - cHeight / 2 + row.offsetHeight / 2;
+      const cell = activeCellRef.current;
+      const cellLeft = cell.offsetLeft;
+      const cellRight = cellLeft + cell.offsetWidth;
+      const cScroll = container.scrollLeft;
+      const cWidth = container.clientWidth;
+      if (cellLeft < cScroll || cellRight > cScroll + cWidth) {
+        container.scrollLeft = cellLeft - cWidth / 2 + cell.offsetWidth / 2;
       }
     }
   }, [highlightedIdx]);
@@ -36,39 +36,54 @@ function DataTable({ keyPoints, currentStep, allData, curveColor }) {
     <div className="graph-container table-container">
       <div className="graph-title">Key Points</div>
       <div className="table-scroll" ref={scrollRef}>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>r</th>
-              <th>&theta;</th>
-            </tr>
-          </thead>
+        <table className="data-table horizontal-table">
           <tbody>
             {keyPoints.length === 0 ? (
               <tr>
-                <td colSpan={2} className="empty-msg">
-                  No key points found
-                </td>
+                <td className="empty-msg" colSpan={2}>No key points found</td>
               </tr>
             ) : (
-              keyPoints.map((pt, i) => (
-                <tr
-                  key={i}
-                  ref={i === highlightedIdx ? activeRowRef : null}
-                  className={i === highlightedIdx ? 'active-row' : ''}
-                  style={
-                    i === highlightedIdx
-                      ? {
-                          backgroundColor: curveColor + '20',
-                          borderLeft: `3px solid ${curveColor}`,
-                        }
-                      : {}
-                  }
-                >
-                  <td className="r-value">{pt.r}</td>
-                  <td className="theta-value">{formatAngle(pt.theta)}</td>
+              <>
+                <tr>
+                  <th className="data-table-header">R</th>
+                  {keyPoints.map((pt, i) => (
+                    <td
+                      key={i}
+                      ref={i === highlightedIdx ? activeCellRef : null}
+                      className={i === highlightedIdx ? 'r-value active-col' : 'r-value'}
+                      style={
+                        i === highlightedIdx
+                          ? {
+                              backgroundColor: curveColor + '20',
+                              borderLeft: `3px solid ${curveColor}`,
+                            }
+                          : {}
+                      }
+                    >
+                      {pt.r}
+                    </td>
+                  ))}
                 </tr>
-              ))
+                <tr>
+                  <th className="data-table-header">&theta;</th>
+                  {keyPoints.map((pt, i) => (
+                    <td
+                      key={i}
+                      className={i === highlightedIdx ? 'theta-value active-col' : 'theta-value'}
+                      style={
+                        i === highlightedIdx
+                          ? {
+                              backgroundColor: curveColor + '20',
+                              borderLeft: `3px solid ${curveColor}`,
+                            }
+                          : {}
+                      }
+                    >
+                      {formatAngle(pt.theta)}
+                    </td>
+                  ))}
+                </tr>
+              </>
             )}
           </tbody>
         </table>

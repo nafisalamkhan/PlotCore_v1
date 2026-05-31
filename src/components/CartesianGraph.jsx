@@ -70,11 +70,11 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
       if (!allData || allData.length === 0) return;
 
       const dark = darkRef.current;
-      const bg = dark ? '#0a0a14' : '#fafafa';
-      const grid = dark ? '#1a1a2e' : '#e0e0e0';
-      const axis = dark ? '#475569' : '#333';
-      const textColor = dark ? '#94a3b8' : '#374151';
-      const tooltipBg = dark ? 'rgba(30, 41, 59, 0.92)' : 'rgba(31, 41, 55, 0.9)';
+      const bg = dark ? '#0a0a12' : '#f8f8fc';
+      const grid = dark ? '#1a1a2a' : '#d0d0e0';
+      const axis = dark ? '#2a2a44' : '#444466';
+      const textColor = dark ? '#666699' : '#666688';
+      const tooltipBg = dark ? 'rgba(10,10,18,0.92)' : 'rgba(30,30,50,0.9)';
 
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, width, height);
