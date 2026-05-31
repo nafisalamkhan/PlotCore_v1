@@ -75,20 +75,23 @@ export function extractKeyPoints(data) {
     }
   }
 
-  // Boundary check: first and last points may be extrema (periodic wrapping)
+  // Boundary check: first/last points at edge of the data range
   if (data.length >= 3) {
-    const first = data[0], second = data[1], last = data[data.length - 1];
-    if (first.r > second.r && first.r > last.r) {
-      raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Max' });
+    const first = data[0], second = data[1];
+    const last = data[data.length - 1], beforeLast = data[data.length - 2];
+    if (Math.abs(first.r) > 0.001) {
+      if (first.r > second.r) {
+        raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Max' });
+      } else if (first.r < second.r) {
+        raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Min' });
+      }
     }
-    if (first.r < second.r && first.r < last.r) {
-      raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Min' });
-    }
-    if (last.r > data[data.length - 2].r && last.r > first.r) {
-      raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Max' });
-    }
-    if (last.r < data[data.length - 2].r && last.r < first.r) {
-      raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Min' });
+    if (Math.abs(last.r) > 0.001) {
+      if (last.r > beforeLast.r) {
+        raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Max' });
+      } else if (last.r < beforeLast.r) {
+        raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Min' });
+      }
     }
   }
 
@@ -118,18 +121,32 @@ export function formatPeriodLabel(period) {
   return ratio.toFixed(2) + 'π';
 }
 
+function gcd(a, b) {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
 export function formatAngle(theta) {
   const ratio = theta / pi;
-  if (abs(ratio) < 0.001) return '0';
-  if (abs(abs(ratio) - 0.5) < 0.001) return `${ratio > 0 ? '' : '-'}π/2`;
-  if (abs(abs(ratio) - 1) < 0.001) return `${ratio > 0 ? '' : '-'}π`;
-  if (abs(abs(ratio) - 1.5) < 0.001) return `${ratio > 0 ? '' : '-'}3π/2`;
-  if (abs(abs(ratio) - 2) < 0.001) return `${ratio > 0 ? '' : '-'}2π`;
-  if (abs(abs(ratio) - 0.25) < 0.001) return `${ratio > 0 ? '' : '-'}π/4`;
-  if (abs(abs(ratio) - 0.75) < 0.001) return `${ratio > 0 ? '' : '-'}3π/4`;
-  if (abs(abs(ratio) - 1 / 3) < 0.001) return `${ratio > 0 ? '' : '-'}π/3`;
-  if (abs(abs(ratio) - 2 / 3) < 0.001) return `${ratio > 0 ? '' : '-'}2π/3`;
-  if (abs(abs(ratio) - 1 / 6) < 0.001) return `${ratio > 0 ? '' : '-'}π/6`;
-  if (abs(abs(ratio) - 5 / 6) < 0.001) return `${ratio > 0 ? '' : '-'}5π/6`;
+  const eps = 0.005;
+
+  if (abs(ratio) < eps) return '0';
+  if (abs(abs(ratio) - 1) < eps) return ratio > 0 ? 'π' : '-π';
+  if (abs(abs(ratio) - 2) < eps) return ratio > 0 ? '2π' : '-2π';
+
+  for (let den = 1; den <= 20; den++) {
+    for (let num = -2 * den; num <= 2 * den; num++) {
+      if (abs(ratio - num / den) < eps) {
+        if (num === 0) return '0';
+        const g = gcd(Math.abs(num), den);
+        const sn = num / g;
+        const sd = den / g;
+        const sign = sn < 0 ? '-' : '';
+        const absSn = Math.abs(sn);
+        if (sd === 1) return `${sign}${absSn === 1 ? '' : absSn}π`;
+        return `${sign}${absSn === 1 ? '' : absSn}π/${sd}`;
+      }
+    }
+  }
+
   return `${ratio.toFixed(2)}π`;
 }

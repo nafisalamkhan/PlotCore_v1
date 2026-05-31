@@ -90,9 +90,10 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
 
       ctx.strokeStyle = '#ccc';
       ctx.lineWidth = 1;
-      const numThetaTicks = 8;
-      for (let i = 0; i <= numThetaTicks; i++) {
-        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaTicks);
+      const tickStep = Math.PI / 4;
+      const tickEnd = Math.ceil(thetaMax / tickStep) * tickStep;
+      for (let theta = 0; theta <= tickEnd + 0.001; theta += tickStep) {
+        if (theta < thetaMin - 0.001) continue;
         const x = toX(theta, thetaMin, thetaMax);
         ctx.beginPath();
         ctx.moveTo(x, padding.top);
@@ -115,9 +116,8 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
       ctx.font = 'bold 11px "SF Mono", "Cascadia Code", "Consolas", monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      const numThetaLabels = 8;
-      for (let i = 0; i <= numThetaLabels; i++) {
-        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaLabels);
+      for (let theta = 0; theta <= tickEnd + 0.001; theta += tickStep) {
+        if (theta < thetaMin - 0.001) continue;
         const x = toX(theta, thetaMin, thetaMax);
         ctx.fillText(formatPi(theta), x, height - padding.bottom + 8);
       }
