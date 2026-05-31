@@ -6,62 +6,63 @@
 
 :root {
   --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  --font-display: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
 
-  --bg-app: #f0f2f5;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #f8fafc;
-  --bg-elevated: #fafafa;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-subtle: #eef2ff;
-  --accent-glow: rgba(99, 102, 241, 0.25);
-  --accent-glow-strong: rgba(99, 102, 241, 0.4);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
-  --graph-bg: #fafafa;
-  --graph-grid: #e2e8f0;
-  --graph-axis: #1e293b;
-  --graph-text: #475569;
+  --bg-app: #09090b;
+  --bg-surface: #12121a;
+  --bg-surface-hover: #1a1a26;
+  --bg-elevated: #181825;
+  --bg-sidebar: #0e0e16;
+  --bg-input: #0a0a12;
+  --text-primary: #e0e0f0;
+  --text-secondary: #8888b0;
+  --text-muted: #55557a;
+  --border: rgba(255,255,255,0.06);
+  --border-light: rgba(255,255,255,0.03);
+  --accent: #66fcf1;
+  --accent-dim: rgba(102,252,241,0.15);
+  --accent-glow: rgba(102,252,241,0.25);
+  --accent-glow-strong: rgba(102,252,241,0.5);
+  --accent-alt: #b026ff;
+  --accent-alt-dim: rgba(176,38,255,0.15);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
+  --graph-bg: #0a0a12;
   --play-bg: #f59e0b;
   --play-hover: #d97706;
 }
 
-[data-theme="dark"] {
-  --bg-app: #07070d;
-  --bg-surface: #111118;
-  --bg-surface-hover: #1a1a25;
-  --bg-elevated: #0d0d16;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border: #1e293b;
-  --border-light: #1a1a2e;
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-subtle: rgba(129, 140, 248, 0.1);
-  --accent-glow: rgba(129, 140, 248, 0.3);
-  --accent-glow-strong: rgba(129, 140, 248, 0.5);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
-  --graph-bg: #0a0a14;
-  --graph-grid: #1e293b;
-  --graph-axis: #475569;
-  --graph-text: #64748b;
+[data-theme="light"] {
+  --bg-app: #d0d0da;
+  --bg-surface: #e8e8f0;
+  --bg-surface-hover: #dddde8;
+  --bg-elevated: #f0f0f8;
+  --bg-sidebar: #dcdce6;
+  --bg-input: #ffffff;
+  --text-primary: #0f0f1a;
+  --text-secondary: #4a4a6a;
+  --text-muted: #7a7a9a;
+  --border: rgba(0,0,0,0.08);
+  --border-light: rgba(0,0,0,0.04);
+  --accent: #5a4cdb;
+  --accent-dim: rgba(90,76,219,0.12);
+  --accent-glow: rgba(90,76,219,0.2);
+  --accent-glow-strong: rgba(90,76,219,0.35);
+  --accent-alt: #8b5cf6;
+  --accent-alt-dim: rgba(139,92,246,0.1);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  --graph-bg: #ffffff;
   --play-bg: #f59e0b;
   --play-hover: #d97706;
 }
 
 body {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--text-primary);
   background: var(--bg-app);
@@ -80,5 +81,5 @@ input, select, button {
 
 ::selection {
   background: var(--accent);
-  color: #fff;
+  color: #000;
 }

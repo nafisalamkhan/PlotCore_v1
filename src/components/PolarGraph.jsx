@@ -19,16 +19,24 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
   kpRef.current = keyPoints;
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
     if (p5Ref.current) {
       p5Ref.current.redraw();
       return;
     }
 
     const sketch = (p) => {
-      let cw = 820, ch = 500;
+      let cw = 800, ch = 500;
 
       p.setup = () => {
         if (containerRef.current) containerRef.current.innerHTML = '';
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect && rect.width > 0 && rect.height > 0) {
+          cw = Math.max(rect.width, 300);
+          ch = Math.max(rect.height, 200);
+        }
         const canvas = p.createCanvas(cw, ch);
         canvas.parent(containerRef.current);
         p.pixelDensity(Math.min(window.devicePixelRatio || 1, 2));
@@ -42,12 +50,12 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         const zoom = zoomRef.current;
         const dark = darkRef.current;
 
-        const bg = dark ? '#0a0a14' : '#fafafa';
-        const grid = dark ? '#1a1a2e' : '#d1d5db';
-        const gridRadial = dark ? '#1a1a2e' : '#d1d5db';
-        const axis = dark ? '#475569' : '#333';
-        const textColor = dark ? '#94a3b8' : '#333';
-        const TickColor = dark ? '#334155' : '#a0aec0';
+        const bg = dark ? '#0a0a12' : '#f8f8fc';
+        const grid = dark ? '#1a1a2a' : '#d0d0e0';
+        const gridRadial = dark ? '#14142a' : '#d0d0e0';
+        const axis = dark ? '#2a2a44' : '#444466';
+        const textColor = dark ? '#666699' : '#666688';
+        const TickColor = dark ? '#222244' : '#9999aa';
 
         p.background(bg);
 
@@ -65,7 +73,9 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         const rValues = data.map((d) => Math.abs(d.r));
         const maxAbsR = Math.max(...rValues, 1);
         const gridR = Math.ceil(maxAbsR);
-        const drawScale = Math.min(cw, ch) * 0.36 * zoom;
+        const padding = 30;
+        const maxRadius = Math.min(cw, ch) / 2 - padding;
+        const drawScale = maxRadius * zoom;
         const us = drawScale / gridR;
 
         p.stroke(gridRadial);
@@ -188,10 +198,9 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         }
       };
 
-      p.resizeToFit = (newW) => {
-        if (newW < 300) newW = 400;
-        cw = newW;
-        ch = 500;
+      p.resizeToFit = (newW, newH) => {
+        cw = Math.max(newW, 300);
+        ch = Math.max(newH, 200);
         p.resizeCanvas(cw, ch);
         p.redraw();
       };
@@ -199,23 +208,26 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
 
     p5Ref.current = new p5(sketch);
 
-    const container = containerRef.current;
-    const parent = container ? container.parentElement : null;
-
-    const observer = new ResizeObserver((entries) => {
+    const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { width } = entry.contentRect;
-        if (width > 0 && p5Ref.current && p5Ref.current.resizeToFit) {
-          const size = Math.max(width - 18, 300);
-          p5Ref.current.resizeToFit(size);
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          p5Ref.current?.resizeToFit(width, height);
         }
       }
     });
+    ro.observe(el);
 
-    if (parent) observer.observe(parent);
+    requestAnimationFrame(() => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      if (w > 0 && h > 0) {
+        p5Ref.current?.resizeToFit(w, h);
+      }
+    });
 
     return () => {
-      observer.disconnect();
+      ro.disconnect();
       if (p5Ref.current) {
         p5Ref.current.remove();
         p5Ref.current = null;
