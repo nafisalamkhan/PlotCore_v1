@@ -2,11 +2,19 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import Header from './components/Header';
 import InputPanel from './components/InputPanel';
 import VisualizationPanel from './components/VisualizationPanel';
-import { calculateCurve, extractKeyPoints, formatPeriodLabel } from './utils/calculations';
+import { calculateCurve, extractKeyPoints } from './utils/calculations';
 import './App.css';
 
 const CURVE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#3b82f6'];
 const ANIMATION_INTERVAL_MS = 12;
+
+function getInitialTheme() {
+  try {
+    const stored = localStorage.getItem('plotcore-theme');
+    if (stored === 'dark' || stored === 'light') return stored === 'dark';
+  } catch {}
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
 
 function App() {
   const [curveType, setCurveType] = useState('rose');
@@ -25,10 +33,20 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
   const [animProgress, setAnimProgress] = useState(0);
+  const [isDark, setIsDark] = useState(getInitialTheme);
 
   const intervalRef = useRef(null);
   const stepRef = useRef(0);
   const allDataRef = useRef(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    try { localStorage.setItem('plotcore-theme', isDark ? 'dark' : 'light'); } catch {}
+  }, [isDark]);
+
+  const toggleTheme = useCallback(() => {
+    setIsDark(prev => !prev);
+  }, []);
 
   const curveColor = CURVE_COLORS[colorIndex % CURVE_COLORS.length];
 
@@ -129,7 +147,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      <Header isDark={isDark} onToggleTheme={toggleTheme} />
       <main className="main-content">
         <InputPanel
           curveType={curveType}
@@ -146,6 +164,7 @@ function App() {
           curveColor={curveColor}
           isPlaying={isPlaying}
           animProgress={animProgress}
+          isDark={isDark}
           onStepForward={stepForward}
           onStepBackward={stepBackward}
           onReset={reset}

@@ -1,16 +1,34 @@
 import { memo } from 'react';
 
-function Header() {
+function Header({ isDark, onToggleTheme }) {
   return (
     <header className="app-header">
-      <h1 className="app-title">
-        <span className="title-icon">⟐</span>
-        PlotCore
-        <span className="title-sub">Polar Curve Animator</span>
-      </h1>
-      <p className="app-desc">
-        Visualize how Rose curves and Limaçons are formed — mapped from Cartesian to Polar coordinates
-      </p>
+      <div className="header-center">
+        <h1 className="app-title">
+          <span className="title-icon">⟐</span>
+          PlotCore
+          <span className="title-sub">Polar Curve Animator</span>
+        </h1>
+        <p className="app-desc">
+          Visualize Rose curves and Limaçons — mapped from Cartesian to Polar
+        </p>
+      </div>
+      <button
+        className="theme-toggle"
+        onClick={onToggleTheme}
+        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label="Toggle theme"
+      >
+        {isDark ? (
+          <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+            <path fillRule="evenodd" d="M10 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm4 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm-.464 4.95.707.707a1 1 0 0 0 1.414-1.414l-.707-.707a1 1 0 0 0-1.414 1.414Zm2.12-10.607a1 1 0 0 1 0 1.414l-.706.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0ZM17 11a1 1 0 1 0 0-2h-1a1 1 0 1 0 0 2h1Zm-7 4a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1ZM5.05 6.464A1 1 0 1 0 6.465 5.05l-.708-.707a1 1 0 0 0-1.414 1.414l.707.707Zm1.414 8.486-.707.707a1 1 0 0 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 1.414ZM4 11a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2h1Z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+            <path fillRule="evenodd" d="M7.455 2.004a.75.75 0 0 1 .26.77 7 7 0 0 0 9.958 7.967.75.75 0 0 1 1.067.853A8.5 8.5 0 1 1 6.647 1.921a.75.75 0 0 1 .808.083Z" clipRule="evenodd" />
+          </svg>
+        )}
+      </button>
     </header>
   );
 }

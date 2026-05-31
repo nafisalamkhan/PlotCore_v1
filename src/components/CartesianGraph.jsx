@@ -1,24 +1,25 @@
 import { memo, useRef, useEffect } from 'react';
+import { formatAngle } from '../utils/calculations';
 
 const PI_FRACTIONS = [
   { v: 0, label: '0' },
-  { v: Math.PI / 12, label: 'π/12' },
-  { v: Math.PI / 6, label: 'π/6' },
-  { v: Math.PI / 4, label: 'π/4' },
-  { v: Math.PI / 3, label: 'π/3' },
-  { v: Math.PI / 2, label: 'π/2' },
-  { v: (2 * Math.PI) / 3, label: '2π/3' },
-  { v: (3 * Math.PI) / 4, label: '3π/4' },
-  { v: (5 * Math.PI) / 6, label: '5π/6' },
-  { v: Math.PI, label: 'π' },
-  { v: (7 * Math.PI) / 6, label: '7π/6' },
-  { v: (5 * Math.PI) / 4, label: '5π/4' },
-  { v: (4 * Math.PI) / 3, label: '4π/3' },
-  { v: (3 * Math.PI) / 2, label: '3π/2' },
-  { v: (5 * Math.PI) / 3, label: '5π/3' },
-  { v: (7 * Math.PI) / 4, label: '7π/4' },
-  { v: (11 * Math.PI) / 6, label: '11π/6' },
-  { v: 2 * Math.PI, label: '2π' },
+  { v: Math.PI / 12, label: '\u03C0/12' },
+  { v: Math.PI / 6, label: '\u03C0/6' },
+  { v: Math.PI / 4, label: '\u03C0/4' },
+  { v: Math.PI / 3, label: '\u03C0/3' },
+  { v: Math.PI / 2, label: '\u03C0/2' },
+  { v: (2 * Math.PI) / 3, label: '2\u03C0/3' },
+  { v: (3 * Math.PI) / 4, label: '3\u03C0/4' },
+  { v: (5 * Math.PI) / 6, label: '5\u03C0/6' },
+  { v: Math.PI, label: '\u03C0' },
+  { v: (7 * Math.PI) / 6, label: '7\u03C0/6' },
+  { v: (5 * Math.PI) / 4, label: '5\u03C0/4' },
+  { v: (4 * Math.PI) / 3, label: '4\u03C0/3' },
+  { v: (3 * Math.PI) / 2, label: '3\u03C0/2' },
+  { v: (5 * Math.PI) / 3, label: '5\u03C0/3' },
+  { v: (7 * Math.PI) / 4, label: '7\u03C0/4' },
+  { v: (11 * Math.PI) / 6, label: '11\u03C0/6' },
+  { v: 2 * Math.PI, label: '2\u03C0' },
 ];
 
 function formatPi(val) {
@@ -26,12 +27,14 @@ function formatPi(val) {
   for (const f of PI_FRACTIONS) {
     if (Math.abs(val - f.v) < eps) return f.label;
   }
-  return (val / Math.PI).toFixed(2) + 'π';
+  return (val / Math.PI).toFixed(2) + '\u03C0';
 }
 
-function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
+function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark }) {
   const canvasRef = useRef(null);
   const hoverRef = useRef(null);
+  const darkRef = useRef(isDark);
+  darkRef.current = isDark;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -44,7 +47,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
     function setupSize() {
       const rect = canvas.parentElement.getBoundingClientRect();
       width = rect.width - 40;
-      height = 300;
+      height = 420;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = width + 'px';
@@ -66,7 +69,15 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
     function draw(hoverTheta, hoverR) {
       if (!allData || allData.length === 0) return;
 
-      ctx.clearRect(0, 0, width, height);
+      const dark = darkRef.current;
+      const bg = dark ? '#0a0a14' : '#fafafa';
+      const grid = dark ? '#1a1a2e' : '#e0e0e0';
+      const axis = dark ? '#475569' : '#333';
+      const textColor = dark ? '#94a3b8' : '#374151';
+      const tooltipBg = dark ? 'rgba(30, 41, 59, 0.92)' : 'rgba(31, 41, 55, 0.9)';
+
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, width, height);
 
       const rValues = allData.map((d) => d.r);
       const rMin = Math.min(...rValues);
@@ -75,7 +86,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
       const thetaMin = allData[0].theta;
       const thetaMax = allData[allData.length - 1].theta;
 
-      ctx.strokeStyle = '#e0e0e0';
+      ctx.strokeStyle = grid;
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
       for (let r = -Math.floor(rRange); r <= Math.floor(rRange); r++) {
@@ -88,11 +99,12 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
       }
       ctx.setLineDash([]);
 
-      ctx.strokeStyle = '#ccc';
+      ctx.strokeStyle = grid;
       ctx.lineWidth = 1;
-      const numThetaTicks = 8;
-      for (let i = 0; i <= numThetaTicks; i++) {
-        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaTicks);
+      const tickStep = Math.PI / 4;
+      const tickEnd = Math.ceil(thetaMax / tickStep) * tickStep;
+      for (let theta = 0; theta <= tickEnd + 0.001; theta += tickStep) {
+        if (theta < thetaMin - 0.001) continue;
         const x = toX(theta, thetaMin, thetaMax);
         ctx.beginPath();
         ctx.moveTo(x, padding.top);
@@ -100,7 +112,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
         ctx.stroke();
       }
 
-      ctx.strokeStyle = '#333';
+      ctx.strokeStyle = axis;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(padding.left, padding.top);
@@ -111,13 +123,12 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
       ctx.lineTo(width - padding.right, toY(0, rRange));
       ctx.stroke();
 
-      ctx.fillStyle = '#374151';
+      ctx.fillStyle = textColor;
       ctx.font = 'bold 11px "SF Mono", "Cascadia Code", "Consolas", monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      const numThetaLabels = 8;
-      for (let i = 0; i <= numThetaLabels; i++) {
-        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaLabels);
+      for (let theta = 0; theta <= tickEnd + 0.001; theta += tickStep) {
+        if (theta < thetaMin - 0.001) continue;
         const x = toX(theta, thetaMin, thetaMax);
         ctx.fillText(formatPi(theta), x, height - padding.bottom + 8);
       }
@@ -195,9 +206,19 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
       }
 
       if (keyPoints && keyPoints.length > 0) {
+        const zeroY = toY(0, rRange);
         keyPoints.forEach((pt) => {
           const tx = toX(pt.theta, thetaMin, thetaMax);
           const ty = toY(pt.r, rRange);
+
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.lineTo(tx, zeroY);
+          ctx.strokeStyle = curveColor + '50';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
 
           ctx.beginPath();
           ctx.arc(tx, ty, 5, 0, 2 * Math.PI);
@@ -206,6 +227,14 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
           ctx.strokeStyle = '#fff';
           ctx.lineWidth = 2;
           ctx.stroke();
+
+          ctx.fillStyle = curveColor;
+          ctx.font = '10px "SF Mono", "Cascadia Code", "Consolas", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          if (pt.label !== 'Min') {
+            ctx.fillText(formatAngle(pt.theta), tx, zeroY + 4);
+          }
         });
       }
 
@@ -217,7 +246,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
         ctx.arc(hx, hy, 7, 0, 2 * Math.PI);
         ctx.fillStyle = 'white';
         ctx.fill();
-        ctx.strokeStyle = '#1f2937';
+        ctx.strokeStyle = axis;
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -227,7 +256,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
         const toX2 = Math.min(hx + 12, width - textWidth - 20);
         const toY2 = Math.max(hy - 30, 10);
 
-        ctx.fillStyle = 'rgba(31, 41, 55, 0.9)';
+        ctx.fillStyle = tooltipBg;
         ctx.beginPath();
         ctx.roundRect(toX2 - 6, toY2 - 4, textWidth + 16, 22, 4);
         ctx.fill();
