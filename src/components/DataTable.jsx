@@ -30,7 +30,6 @@ function DataTable({ keyPoints, currentStep, allData, curveColor }) {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Point</th>
               <th>r</th>
               <th>&theta;</th>
             </tr>
@@ -38,7 +37,7 @@ function DataTable({ keyPoints, currentStep, allData, curveColor }) {
           <tbody>
             {keyPoints.length === 0 ? (
               <tr>
-                <td colSpan={3} className="empty-msg">
+                <td colSpan={2} className="empty-msg">
                   No key points found
                 </td>
               </tr>
@@ -57,13 +56,6 @@ function DataTable({ keyPoints, currentStep, allData, curveColor }) {
                       : {}
                   }
                 >
-                  <td className="point-label">
-                    <span
-                      className="point-dot"
-                      style={{ backgroundColor: curveColor }}
-                    />
-                    {pt.label}
-                  </td>
                   <td className="r-value">{pt.r}</td>
                   <td className="theta-value">{formatAngle(pt.theta)}</td>
                 </tr>

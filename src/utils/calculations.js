@@ -49,37 +49,66 @@ function calculateLimacon(a, b, func, operator) {
 export function extractKeyPoints(data) {
   if (!data || data.length === 0) return [];
 
-  let maxPt = data[0];
-  let minPt = data[0];
-  let zeroPt = data[0];
-  let minZeroDist = Infinity;
+  const raw = [];
+  const eps = 0.005;
 
-  for (const pt of data) {
-    if (pt.r > maxPt.r) maxPt = pt;
-    if (pt.r < minPt.r) minPt = pt;
-    const d = abs(pt.r);
-    if (d < minZeroDist) {
-      minZeroDist = d;
-      zeroPt = pt;
+  // Zero crossings: sign change or zero boundary between consecutive points
+  for (let i = 1; i < data.length; i++) {
+    const prev = data[i - 1];
+    const curr = data[i];
+    if (prev.r * curr.r <= 0 && !(prev.r === 0 && curr.r === 0)) {
+      const pt = Math.abs(prev.r) <= Math.abs(curr.r) ? prev : curr;
+      raw.push({ theta: pt.theta, r: 0, label: 'Zero' });
     }
   }
 
-  const result = [];
-  const seen = new Set();
-
-  for (const pt of [minPt, zeroPt, maxPt]) {
-    const key = round(pt.theta, 4).toString();
-    if (!seen.has(key)) {
-      seen.add(key);
-      let label = '';
-      if (pt === minPt && pt.r < 0) label = 'Min';
-      else if (pt === maxPt && pt.r > 0) label = 'Max';
-      else label = 'Zero';
-      result.push({ theta: pt.theta, r: round(pt.r, 2), label });
+  // Local extrema: compare with neighbors
+  for (let i = 1; i < data.length - 1; i++) {
+    const prev = data[i - 1];
+    const curr = data[i];
+    const next = data[i + 1];
+    if (curr.r > prev.r && curr.r > next.r) {
+      raw.push({ theta: curr.theta, r: round(curr.r, 2), label: 'Max' });
+    }
+    if (curr.r < prev.r && curr.r < next.r) {
+      raw.push({ theta: curr.theta, r: round(curr.r, 2), label: 'Min' });
     }
   }
 
-  return result.sort((a, b) => a.r - b.r);
+  // Boundary check: first and last points may be extrema (periodic wrapping)
+  if (data.length >= 3) {
+    const first = data[0], second = data[1], last = data[data.length - 1];
+    if (first.r > second.r && first.r > last.r) {
+      raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Max' });
+    }
+    if (first.r < second.r && first.r < last.r) {
+      raw.push({ theta: first.theta, r: round(first.r, 2), label: 'Min' });
+    }
+    if (last.r > data[data.length - 2].r && last.r > first.r) {
+      raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Max' });
+    }
+    if (last.r < data[data.length - 2].r && last.r < first.r) {
+      raw.push({ theta: last.theta, r: round(last.r, 2), label: 'Min' });
+    }
+  }
+
+  // Deduplicate: merge points with very close theta
+  const sorted = raw.sort((a, b) => a.theta - b.theta);
+  const deduped = [];
+
+  for (const pt of sorted) {
+    const last = deduped[deduped.length - 1];
+    if (last && Math.abs(pt.theta - last.theta) < eps) {
+      if (pt.label === 'Zero') {
+        last.label = 'Zero';
+        last.r = 0;
+      }
+    } else {
+      deduped.push({ ...pt });
+    }
+  }
+
+  return deduped;
 }
 
 export function formatPeriodLabel(period) {

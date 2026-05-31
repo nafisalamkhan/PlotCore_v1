@@ -405,24 +405,40 @@
   justify-content: center;
 }
 
+.canvas-wrapper:not(.polar-wrapper) {
+  max-width: 520px;
+}
+
 .canvas-wrapper canvas {
   display: block;
   max-width: 100%;
   border-radius: 4px;
 }
 
-/* ── Polar Container (fixed height, not dependent on parent) ── */
+/* ── Polar Container ── */
 .polar-container {
-  height: auto;
+  height: 100%;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
 }
 
-.polar-wrapper {
-  min-height: 536px;
-  width: 100%;
+.polar-container .graph-title {
+  flex-shrink: 0;
+}
+
+.canvas-wrapper.polar-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  min-height: 0;
 }
 
 .polar-wrapper canvas {
-  max-width: 100%;
+  display: block;
+  border-radius: 4px;
 }
 
 /* ── Data Table ── */
@@ -538,12 +554,8 @@
     grid-row: 3;
   }
 
-  .polar-wrapper {
-    min-height: 380px;
-  }
-
-  .polar-wrapper canvas {
-    height: 380px !important;
+  .polar-container {
+    min-height: 340px;
   }
 
   .table-scroll {
@@ -590,11 +602,7 @@
     gap: 8px;
   }
 
-  .polar-wrapper {
-    min-height: 300px;
-  }
-
-  .polar-wrapper canvas {
-    height: 300px !important;
+  .polar-container {
+    min-height: 320px;
   }
 }

@@ -1,5 +1,4 @@
 import { memo, useRef, useEffect } from 'react';
-import { formatAngle } from '../utils/calculations';
 
 const PI_FRACTIONS = [
   { v: 0, label: '0' },
@@ -116,8 +115,9 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
       ctx.font = 'bold 11px "SF Mono", "Cascadia Code", "Consolas", monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      for (let i = 0; i <= numThetaTicks; i++) {
-        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaTicks);
+      const numThetaLabels = 8;
+      for (let i = 0; i <= numThetaLabels; i++) {
+        const theta = thetaMin + (thetaMax - thetaMin) * (i / numThetaLabels);
         const x = toX(theta, thetaMin, thetaMax);
         ctx.fillText(formatPi(theta), x, height - padding.bottom + 8);
       }
@@ -206,13 +206,6 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor }) {
           ctx.strokeStyle = '#fff';
           ctx.lineWidth = 2;
           ctx.stroke();
-
-          ctx.fillStyle = curveColor;
-          ctx.font = 'bold 11px "SF Mono", "Cascadia Code", "Consolas", monospace';
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'bottom';
-          const label = `${pt.label} (${pt.r}, ${formatAngle(pt.theta)})`;
-          ctx.fillText(label, Math.min(tx + 8, width - 120), Math.max(ty - 6, 14));
         });
       }
 
