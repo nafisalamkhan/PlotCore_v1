@@ -100,30 +100,33 @@ function VisualizationPanel({
           </div>
 
           <div className="viz-grid">
-            <div className="viz-section-cartesian">
-              <CartesianGraph
-                allData={allData}
-                currentStep={currentStep}
-                keyPoints={keyPoints}
-                curveColor={curveColor}
-                isDark={isDark}
-              />
-            </div>
-            <div className="viz-section-table">
-              <DataTable
-                keyPoints={keyPoints}
-                currentStep={currentStep}
-                allData={allData}
-                curveColor={curveColor}
-              />
-            </div>
             <div className="viz-section-polar">
               <PolarGraph
                 allData={allData}
                 currentStep={currentStep}
                 curveColor={curveColor}
                 isDark={isDark}
+                keyPoints={keyPoints}
               />
+            </div>
+            <div className="viz-bottom-row">
+              <div className="viz-section-cartesian">
+                <CartesianGraph
+                  allData={allData}
+                  currentStep={currentStep}
+                  keyPoints={keyPoints}
+                  curveColor={curveColor}
+                  isDark={isDark}
+                />
+              </div>
+              <div className="viz-section-table">
+                <DataTable
+                  keyPoints={keyPoints}
+                  currentStep={currentStep}
+                  allData={allData}
+                  curveColor={curveColor}
+                />
+              </div>
             </div>
           </div>
         </>

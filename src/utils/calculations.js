@@ -12,7 +12,7 @@ export function calculateCurve(params) {
 function calculateRose(a, n, func) {
   const isOdd = Math.abs(n % 2) === 1;
   const end = isOdd ? pi : 2 * pi;
-  const steps = 720;
+  const steps = 1440;
   const step = end / steps;
   const data = [];
 
@@ -27,7 +27,7 @@ function calculateRose(a, n, func) {
 }
 
 function calculateLimacon(a, b, func, operator) {
-  const steps = 720;
+  const steps = 1440;
   const step = (2 * pi) / steps;
   const data = [];
 

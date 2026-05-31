@@ -3,7 +3,7 @@ import { memo } from 'react';
 function Header({ isDark, onToggleTheme }) {
   return (
     <header className="app-header">
-      <div className="header-left">
+      <div className="header-center">
         <h1 className="app-title">
           <span className="title-icon">⟐</span>
           PlotCore

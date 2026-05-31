@@ -1,19 +1,22 @@
 import { memo, useRef, useEffect } from 'react';
 import p5 from 'p5';
+import { formatAngle } from '../utils/calculations';
 
-function PolarGraph({ allData, currentStep, curveColor, isDark }) {
+function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
   const containerRef = useRef(null);
   const p5Ref = useRef(null);
   const dataRef = useRef(allData);
   const stepRef = useRef(currentStep);
   const colorRef = useRef(curveColor);
   const darkRef = useRef(isDark);
+  const kpRef = useRef(keyPoints);
   const zoomRef = useRef(1);
 
   dataRef.current = allData;
   stepRef.current = currentStep;
   colorRef.current = curveColor;
   darkRef.current = isDark;
+  kpRef.current = keyPoints;
 
   useEffect(() => {
     if (p5Ref.current) {
@@ -22,7 +25,7 @@ function PolarGraph({ allData, currentStep, curveColor, isDark }) {
     }
 
     const sketch = (p) => {
-      let cw = 700, ch = 420;
+      let cw = 820, ch = 500;
 
       p.setup = () => {
         if (containerRef.current) containerRef.current.innerHTML = '';
@@ -91,24 +94,33 @@ function PolarGraph({ allData, currentStep, curveColor, isDark }) {
         p.textSize(12);
         p.textAlign(p.CENTER, p.TOP);
         const ld = gridR * us + 16;
-        const majorAngles = [
-          { a: 0, l: '0' },
-          { a: p.PI / 6, l: '\u03C0/6' },
-          { a: p.PI / 4, l: '\u03C0/4' },
-          { a: p.PI / 3, l: '\u03C0/3' },
-          { a: p.PI / 2, l: '\u03C0/2' },
-          { a: (2 * p.PI) / 3, l: '2\u03C0/3' },
-          { a: (3 * p.PI) / 4, l: '3\u03C0/4' },
-          { a: (5 * p.PI) / 6, l: '5\u03C0/6' },
-          { a: p.PI, l: '\u03C0' },
-          { a: (7 * p.PI) / 6, l: '7\u03C0/6' },
-          { a: (5 * p.PI) / 4, l: '5\u03C0/4' },
-          { a: (4 * p.PI) / 3, l: '4\u03C0/3' },
-          { a: (3 * p.PI) / 2, l: '3\u03C0/2' },
-          { a: (5 * p.PI) / 3, l: '5\u03C0/3' },
-          { a: (7 * p.PI) / 4, l: '7\u03C0/4' },
-          { a: (11 * p.PI) / 6, l: '11\u03C0/6' },
-        ];
+        const kp = kpRef.current || [];
+        const labelSet = new Map();
+        for (let k = 0; k < 8; k++) {
+          const a = (k * p.PI) / 4;
+          let l;
+          if (k === 0) l = '0';
+          else if (k === 1) l = '\u03C0/4';
+          else if (k === 2) l = '\u03C0/2';
+          else if (k === 3) l = '3\u03C0/4';
+          else if (k === 4) l = '\u03C0';
+          else if (k === 5) l = '5\u03C0/4';
+          else if (k === 6) l = '3\u03C0/2';
+          else l = '7\u03C0/4';
+          labelSet.set(a, l);
+        }
+        const eps = 0.02;
+        kp.forEach(pt => {
+          if (pt.label === 'Min') return;
+          let dup = false;
+          for (const existing of labelSet.keys()) {
+            if (Math.abs(pt.theta - existing) < eps) { dup = true; break; }
+          }
+          if (!dup) labelSet.set(pt.theta, formatAngle(pt.theta));
+        });
+        const majorAngles = Array.from(labelSet.entries())
+          .map(([a, l]) => ({ a: parseFloat(a), l }))
+          .sort((a, b) => a.a - b.a);
 
         const rOuter = gridR * us;
         majorAngles.forEach(({ a, l }) => {
@@ -178,8 +190,8 @@ function PolarGraph({ allData, currentStep, curveColor, isDark }) {
 
       p.resizeToFit = (newW) => {
         if (newW < 300) newW = 400;
-        cw = Math.min(newW, 800);
-        ch = 420;
+        cw = newW;
+        ch = 500;
         p.resizeCanvas(cw, ch);
         p.redraw();
       };
@@ -194,7 +206,7 @@ function PolarGraph({ allData, currentStep, curveColor, isDark }) {
       for (const entry of entries) {
         const { width } = entry.contentRect;
         if (width > 0 && p5Ref.current && p5Ref.current.resizeToFit) {
-          const size = Math.min(Math.max(width - 18, 300), 800);
+          const size = Math.max(width - 18, 300);
           p5Ref.current.resizeToFit(size);
         }
       }
@@ -240,7 +252,7 @@ function PolarGraph({ allData, currentStep, curveColor, isDark }) {
 
   useEffect(() => {
     if (p5Ref.current) p5Ref.current.redraw();
-  }, [allData, currentStep, curveColor, isDark]);
+  }, [allData, currentStep, curveColor, isDark, keyPoints]);
 
   return (
     <div className="graph-container polar-container">

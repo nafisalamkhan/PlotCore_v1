@@ -1,6 +1,5 @@
 /* ── Layout ── */
 .app {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 16px 20px 40px;
 }
@@ -14,15 +13,17 @@
 /* ── Header ── */
 .app-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  position: relative;
   margin-bottom: 4px;
 }
 
-.header-left {
+.header-center {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
 }
 
 .app-title {
@@ -56,6 +57,9 @@
 
 /* ── Dark Mode Toggle ── */
 .theme-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
   width: 40px;
   height: 40px;
   border: 1px solid var(--border);
@@ -406,30 +410,23 @@
   box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4) !important;
 }
 
-/* ── Viz Grid ── */
+/* ── Viz Grid: Polar main focus, Cartesian + Table below ── */
 .viz-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 16px;
-  align-items: start;
-}
-
-.viz-section-cartesian {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.viz-section-table {
-  grid-column: 1;
-  grid-row: 2;
 }
 
 .viz-section-polar {
-  grid-column: 2;
-  grid-row: 1 / 3;
-  align-self: start;
-  justify-self: center;
+  width: 100%;
+}
+
+.viz-bottom-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
 
 /* ── Graph Containers ── */
@@ -581,26 +578,6 @@
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .viz-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
-
-  .viz-section-cartesian {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .viz-section-table {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .viz-section-polar {
-    grid-column: 1;
-    grid-row: 3;
-  }
-
   .table-scroll {
     max-height: 160px;
   }

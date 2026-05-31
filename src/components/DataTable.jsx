@@ -3,6 +3,7 @@ import { formatAngle } from '../utils/calculations';
 
 function DataTable({ keyPoints, currentStep, allData, curveColor }) {
   const activeRowRef = useRef(null);
+  const scrollRef = useRef(null);
 
   let highlightedIdx = -1;
   if (currentStep >= 0 && allData && allData.length > 0 && keyPoints.length > 0) {
@@ -18,15 +19,23 @@ function DataTable({ keyPoints, currentStep, allData, curveColor }) {
   }
 
   useEffect(() => {
-    if (activeRowRef.current) {
-      activeRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (activeRowRef.current && scrollRef.current) {
+      const container = scrollRef.current;
+      const row = activeRowRef.current;
+      const rowTop = row.offsetTop;
+      const rowBot = rowTop + row.offsetHeight;
+      const cScroll = container.scrollTop;
+      const cHeight = container.clientHeight;
+      if (rowTop < cScroll || rowBot > cScroll + cHeight) {
+        container.scrollTop = rowTop - cHeight / 2 + row.offsetHeight / 2;
+      }
     }
   }, [highlightedIdx]);
 
   return (
     <div className="graph-container table-container">
       <div className="graph-title">Key Points</div>
-      <div className="table-scroll">
+      <div className="table-scroll" ref={scrollRef}>
         <table className="data-table">
           <thead>
             <tr>
