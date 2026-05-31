@@ -12,6 +12,7 @@ function VisualizationPanel({
   curveColor,
   isPlaying,
   animProgress,
+  isDark,
   onStepForward,
   onStepBackward,
   onReset,
@@ -105,6 +106,7 @@ function VisualizationPanel({
                 currentStep={currentStep}
                 keyPoints={keyPoints}
                 curveColor={curveColor}
+                isDark={isDark}
               />
             </div>
             <div className="viz-section-table">
@@ -120,6 +122,7 @@ function VisualizationPanel({
                 allData={allData}
                 currentStep={currentStep}
                 curveColor={curveColor}
+                isDark={isDark}
               />
             </div>
           </div>

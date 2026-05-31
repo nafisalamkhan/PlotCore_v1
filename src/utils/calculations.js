@@ -23,7 +23,7 @@ function calculateRose(a, n, func) {
     data.push({ theta: re(theta), r: re(r) });
   }
 
-  return { data, period: re(end) };
+  return { data, period: re(2 * pi / n) };
 }
 
 function calculateLimacon(a, b, func, operator) {
@@ -118,6 +118,17 @@ export function formatPeriodLabel(period) {
   const ratio = period / pi;
   if (abs(ratio - 1) < 0.001) return 'π';
   if (abs(ratio - 2) < 0.001) return '2π';
+  for (let den = 1; den <= 20; den++) {
+    for (let num = 1; num <= 2 * den; num++) {
+      if (abs(ratio - num / den) < 0.005) {
+        const g = gcd(num, den);
+        const sn = num / g;
+        const sd = den / g;
+        if (sd === 1) return `${sn === 1 ? '' : sn}π`;
+        return `${sn === 1 ? '' : sn}π/${sd}`;
+      }
+    }
+  }
   return ratio.toFixed(2) + 'π';
 }
 

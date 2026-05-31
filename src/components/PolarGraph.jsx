@@ -1,17 +1,19 @@
 import { memo, useRef, useEffect } from 'react';
 import p5 from 'p5';
 
-function PolarGraph({ allData, currentStep, curveColor }) {
+function PolarGraph({ allData, currentStep, curveColor, isDark }) {
   const containerRef = useRef(null);
   const p5Ref = useRef(null);
   const dataRef = useRef(allData);
   const stepRef = useRef(currentStep);
   const colorRef = useRef(curveColor);
+  const darkRef = useRef(isDark);
   const zoomRef = useRef(1);
 
   dataRef.current = allData;
   stepRef.current = currentStep;
   colorRef.current = curveColor;
+  darkRef.current = isDark;
 
   useEffect(() => {
     if (p5Ref.current) {
@@ -20,7 +22,7 @@ function PolarGraph({ allData, currentStep, curveColor }) {
     }
 
     const sketch = (p) => {
-      let cw = 500, ch = 500;
+      let cw = 700, ch = 420;
 
       p.setup = () => {
         if (containerRef.current) containerRef.current.innerHTML = '';
@@ -35,11 +37,19 @@ function PolarGraph({ allData, currentStep, curveColor }) {
         const step = stepRef.current;
         const color = colorRef.current;
         const zoom = zoomRef.current;
+        const dark = darkRef.current;
 
-        p.background(252);
+        const bg = dark ? '#0a0a14' : '#fafafa';
+        const grid = dark ? '#1a1a2e' : '#d1d5db';
+        const gridRadial = dark ? '#1a1a2e' : '#d1d5db';
+        const axis = dark ? '#475569' : '#333';
+        const textColor = dark ? '#94a3b8' : '#333';
+        const TickColor = dark ? '#334155' : '#a0aec0';
+
+        p.background(bg);
 
         if (!data || data.length === 0) {
-          p.fill(150);
+          p.fill(textColor);
           p.noStroke();
           p.textAlign(p.CENTER, p.CENTER);
           p.textSize(16);
@@ -55,14 +65,14 @@ function PolarGraph({ allData, currentStep, curveColor }) {
         const drawScale = Math.min(cw, ch) * 0.36 * zoom;
         const us = drawScale / gridR;
 
-        p.stroke(215);
+        p.stroke(gridRadial);
         p.strokeWeight(0.5);
         p.noFill();
         for (let r = 1; r <= gridR; r++) {
           p.ellipse(cx, cy, r * us * 2);
         }
 
-        p.stroke(195);
+        p.stroke(grid);
         p.strokeWeight(0.5);
         for (let a = 0; a < 24; a++) {
           const angle = (a * p.PI) / 12;
@@ -71,13 +81,13 @@ function PolarGraph({ allData, currentStep, curveColor }) {
           p.line(cx, cy, cx + ex, cy + ey);
         }
 
-        p.stroke(165);
-        p.strokeWeight(1);
+        p.stroke(axis);
+        p.strokeWeight(1.5);
         p.line(0, cy, cw, cy);
         p.line(cx, 0, cx, ch);
 
         p.noStroke();
-        p.fill(90);
+        p.fill(textColor);
         p.textSize(12);
         p.textAlign(p.CENTER, p.TOP);
         const ld = gridR * us + 16;
@@ -107,7 +117,7 @@ function PolarGraph({ allData, currentStep, curveColor }) {
           p.text(l, lx, ly);
           const tx = cx + p.cos(a) * rOuter;
           const ty = cy + p.sin(a) * rOuter;
-          p.stroke(165);
+          p.stroke(TickColor);
           p.strokeWeight(1);
           p.line(tx - p.cos(a) * 6, ty - p.sin(a) * 6, tx, ty);
         });
@@ -115,7 +125,7 @@ function PolarGraph({ allData, currentStep, curveColor }) {
         p.textAlign(p.RIGHT, p.CENTER);
         p.textSize(10);
         for (let r = 1; r <= gridR; r++) {
-          p.fill(90);
+          p.fill(textColor);
           p.noStroke();
           p.text(r.toString(), cx - r * us - 5, cy);
           p.text(r.toString(), cx - r * us - 5, cy - r * us);
@@ -166,11 +176,10 @@ function PolarGraph({ allData, currentStep, curveColor }) {
         }
       };
 
-      p.resizeToFit = (newW, newH) => {
-        if (newW < 200) newW = 400;
-        if (newH < 200) newH = 400;
-        cw = Math.min(newW, 600);
-        ch = Math.min(newH, 600);
+      p.resizeToFit = (newW) => {
+        if (newW < 300) newW = 400;
+        cw = Math.min(newW, 800);
+        ch = 420;
         p.resizeCanvas(cw, ch);
         p.redraw();
       };
@@ -185,8 +194,8 @@ function PolarGraph({ allData, currentStep, curveColor }) {
       for (const entry of entries) {
         const { width } = entry.contentRect;
         if (width > 0 && p5Ref.current && p5Ref.current.resizeToFit) {
-          const size = Math.min(Math.max(width - 18, 300), 600);
-          p5Ref.current.resizeToFit(size, size);
+          const size = Math.min(Math.max(width - 18, 300), 800);
+          p5Ref.current.resizeToFit(size);
         }
       }
     });
@@ -231,7 +240,7 @@ function PolarGraph({ allData, currentStep, curveColor }) {
 
   useEffect(() => {
     if (p5Ref.current) p5Ref.current.redraw();
-  }, [allData, currentStep, curveColor]);
+  }, [allData, currentStep, curveColor, isDark]);
 
   return (
     <div className="graph-container polar-container">
@@ -241,7 +250,7 @@ function PolarGraph({ allData, currentStep, curveColor }) {
           <button className="ctrl-btn save-btn" onClick={handleZoomOut} title="Zoom out" style={{ width: 26, height: 26 }}>
             <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fillRule="evenodd" d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clipRule="evenodd" /></svg>
           </button>
-          <span onClick={handleZoomReset} style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', cursor: 'pointer', minWidth: 32, textAlign: 'center' }}>
+          <span onClick={handleZoomReset} style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', cursor: 'pointer', minWidth: 32, textAlign: 'center' }}>
             {zoomRef.current.toFixed(1)}x
           </span>
           <button className="ctrl-btn save-btn" onClick={handleZoomIn} title="Zoom in" style={{ width: 26, height: 26 }}>
