@@ -1,6 +1,15 @@
 import { memo, useRef, useEffect } from 'react';
 import p5 from 'p5';
 
+/**
+ * Render an animated polar plot using a p5.js sketch mounted inside the component.
+ *
+ * @param {Object} props - Component props.
+ * @param {Array<{theta: number, r: number}>} props.allData - Polar-coordinate samples to plot; each item has `theta` (radians) and `r` (radius).
+ * @param {number} props.currentStep - Index of the last data point to render (clamped to data bounds).
+ * @param {string} props.curveColor - CSS color used for the plotted curve and markers.
+ * @returns {JSX.Element} A JSX element containing the polar animation canvas and related UI wrapper.
+ */
 function PolarGraph({ allData, currentStep, curveColor }) {
   const containerRef = useRef(null);
   const p5Ref = useRef(null);

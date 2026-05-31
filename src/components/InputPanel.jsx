@@ -1,5 +1,16 @@
 import { memo, useCallback } from 'react';
 
+/**
+ * Render controls for selecting a curve type, editing curve parameters, previewing the resulting polar equation, and triggering generation/animation.
+ *
+ * @param {{curveType: string, params: Object, onParamsChange: function, onGenerate: function, disabled: boolean}} props
+ * @param {'rose'|'limacon'} props.curveType - Currently selected curve type.
+ * @param {{a: number, n?: number, b?: number, operator?: string, func: string}} props.params - Current parameter values used to build the equation preview.
+ * @param {(updatedParams: Object) => void} props.onParamsChange - Called with an updated params object when any input changes.
+ * @param {() => void} props.onGenerate - Called when the Generate & Animate button is clicked.
+ * @param {boolean} props.disabled - When true, inputs/selects are disabled and the generate button shows a busy label.
+ * @returns {JSX.Element} The input panel element containing curve tabs, parameter inputs, equation preview, and generate button.
+ */
 function InputPanel({ curveType, params, onParamsChange, onGenerate, disabled }) {
   const handleChange = useCallback((field) => (e) => {
     const value = e.target.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;

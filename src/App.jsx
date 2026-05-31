@@ -8,6 +8,15 @@ import './App.css';
 const CURVE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#3b82f6'];
 const ANIMATION_INTERVAL_MS = 12;
 
+/**
+ * Root React component that manages curve generation, animation state, and UI composition.
+ *
+ * Handles curve parameter state, data generation, animation controls (play, pause, step,
+ * restart, reset), derived table data, and cleanup. Renders the input panel and visualization
+ * panel and wires their callbacks to the internal control functions.
+ *
+ * @returns {JSX.Element} The root JSX element for the curve visualization application.
+ */
 function App() {
   const [curveType, setCurveType] = useState('rose');
   const [params, setParams] = useState({

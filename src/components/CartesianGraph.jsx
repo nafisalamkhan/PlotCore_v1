@@ -21,6 +21,12 @@ const PI_FRACTIONS = [
   { v: 2 * Math.PI, label: '2π' },
 ];
 
+/**
+ * Format an angle in radians as a readable π-based label when possible.
+ * 
+ * @param {number} val - Angle in radians to format.
+ * @returns {string} A symbolic label from the predefined fraction table if `val` is within 0.02 of a known fraction (e.g., "π/2"); otherwise a numeric fallback formatted as "<n>π" with two decimal places (e.g., "1.57π").
+ */
 function formatPi(val) {
   const eps = 0.02;
   for (const f of PI_FRACTIONS) {
@@ -29,6 +35,16 @@ function formatPi(val) {
   return (val / Math.PI).toFixed(2) + 'π';
 }
 
+/**
+ * Render an interactive Cartesian plot of r versus θ onto a canvas, with gridlines, a filled curve area, progress/remaining curve segments, point markers, and hover inspection.
+ *
+ * @param {{allData: Array<{theta:number,r:number}>, currentStep: number, tableData?: Array<{theta:number,r:number}>, curveColor: string}} props
+ * @param {Array<{theta:number,r:number}>} props.allData - Ordered array of sample points; each item must contain numeric `theta` and `r`.
+ * @param {number} props.currentStep - Index of the currently highlighted sample; if negative the plot is drawn to the end.
+ * @param {Array<{theta:number,r:number}>} [props.tableData] - Optional additional points to plot on top of the curve.
+ * @param {string} props.curveColor - CSS color (hex or named) used for the curve, fills, and markers.
+ * @returns {JSX.Element} A React element containing the titled canvas used to render the interactive plot.
+ */
 function CartesianGraph({ allData, currentStep, tableData, curveColor }) {
   const canvasRef = useRef(null);
   const hoverRef = useRef(null);

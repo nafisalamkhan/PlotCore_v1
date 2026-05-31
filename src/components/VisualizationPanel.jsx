@@ -3,6 +3,23 @@ import CartesianGraph from './CartesianGraph';
 import DataTable from './DataTable';
 import PolarGraph from './PolarGraph';
 
+/**
+ * Render the visualization panel that shows either a placeholder (when no curve data) or an animation/control UI with a progress indicator and three visualization sections: Cartesian graph, data table, and polar graph.
+ *
+ * @param {Object} props - Component props.
+ * @param {Array<Object>} props.allData - Full dataset for the visualizations; used to derive availability and length.
+ * @param {Array<Object>} props.tableData - Data formatted for the DataTable component.
+ * @param {number} props.currentStep - Current animation step index.
+ * @param {string} props.curveColor - CSS color used for the curve and progress bar.
+ * @param {boolean} props.isPlaying - Playback state; true when animation is playing.
+ * @param {number} props.animProgress - Animation progress as a percentage (0–100).
+ * @param {Function} props.onStepForward - Callback to advance one step.
+ * @param {Function} props.onStepBackward - Callback to go back one step.
+ * @param {Function} props.onReset - Callback to reset to the first step.
+ * @param {Function} props.onRestart - Callback to restart animation from the beginning.
+ * @param {Function} props.onTogglePlay - Callback to toggle play/pause.
+ * @returns {JSX.Element} The rendered visualization panel.
+ */
 function VisualizationPanel({
   allData,
   tableData,

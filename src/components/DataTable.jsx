@@ -1,6 +1,17 @@
 import { memo, useRef, useEffect } from 'react';
 import { formatAngle } from '../utils/calculations';
 
+/**
+ * Render a scrollable table of key data points and highlight the row whose `theta` is nearest the current step.
+ *
+ * Renders a table with columns "#", "r", and "θ". If `tableData` is empty a single-row message is shown. When `currentStep` is valid and both `allData` and `tableData` contain entries, the row with the `theta` value closest to `allData[currentStep].theta` is visually highlighted and scrolled into view.
+ *
+ * @param {{r: number, theta: number}[]} tableData - Array of data points to display; each item must include `r` and `theta`.
+ * @param {number} currentStep - Index into `allData` indicating the current step; used to determine which row to highlight. May be negative to indicate no current step.
+ * @param {{theta: number}[]} allData - Full dataset containing `theta` values used to find the closest `theta` to highlight.
+ * @param {string} curveColor - Base CSS color used for the highlighted row's background and left border.
+ * @returns {JSX.Element} The rendered table container element.
+ */
 function DataTable({ tableData, currentStep, allData, curveColor }) {
   const activeRowRef = useRef(null);
 

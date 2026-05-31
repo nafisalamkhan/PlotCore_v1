@@ -46,6 +46,14 @@ function calculateLimacon(a, b, func, operator) {
   return { data, period: re(2 * pi) };
 }
 
+/**
+ * Extracts points whose radius is effectively an integer and returns unique theta–radius pairs.
+ *
+ * Scans `data` for points where `r` rounded to two decimals is within `tolerance` of an integer, rounds that radius to the nearest integer, and omits points whose `theta` is within 0.001 of an already-included theta.
+ * @param {Array<{theta: number, r: number}>} data - Array of points with numeric `theta` and `r`.
+ * @param {number} [tolerance=0.01] - Maximum allowed difference between the rounded radius and the nearest integer.
+ * @returns {Array<{theta: number, r: number}>} An array of points containing the original `theta` and the integer `r` (rounded), with no two returned points having `theta` values closer than 0.001.
+ */
 export function extractWholeNumberPairs(data, tolerance = 0.01) {
   const result = [];
   for (const point of data) {
@@ -65,6 +73,14 @@ export function extractWholeNumberPairs(data, tolerance = 0.01) {
   return result;
 }
 
+/**
+ * Selects points whose rounded radius equals the rounded minimum, the rounded value closest to zero, or the rounded maximum.
+ *
+ * Filters the input array of polar points to keep only those whose Math.round(r) matches one of three representative radii: the smallest rounded r, the rounded r nearest zero (by absolute value), and the largest rounded r. If the set of unique rounded radii has three or fewer values, all points with those rounded radii are retained. Returns an empty array when `data` is missing or empty.
+ *
+ * @param {Array<{theta: number, r: number}>} data - Array of points with numeric `theta` and `r`.
+ * @returns {Array<{theta: number, r: number}>} Filtered subset of `data` containing only points for the min, mid (closest to zero), and max rounded radii.
+ */
 export function filterMinMidMax(data) {
   if (!data || data.length === 0) return [];
 
@@ -93,6 +109,13 @@ export function filterMinMidMax(data) {
   return data.filter((d) => keep.has(Math.round(d.r)));
 }
 
+/**
+ * Format an angle in radians as a human-readable multiple of π.
+ *
+ * Recognizes common fractional multiples of π (including ±π/6, ±π/4, ±π/3, ±π/2, ±2π/3, ±3π/2, ±5π/6, ±4π/3, ±5π/3, ±7π/4, ±5π/4, ±2π, and 0) and returns them using π notation; for other angles returns the coefficient rounded to two decimals followed by "π" (e.g., "0.33π").
+ * @param {number} theta - Angle value in radians.
+ * @returns {string} The angle formatted as a multiple of π.
+ */
 export function formatAngle(theta) {
   const ratio = theta / pi;
   if (abs(ratio) < 0.001) return '0';
