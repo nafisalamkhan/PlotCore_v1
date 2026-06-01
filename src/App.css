@@ -3,6 +3,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--bg-app);
 }
@@ -256,6 +257,11 @@
   opacity: 0.4;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+/* ── Touch handling ── */
+button, select, input {
+  touch-action: manipulation;
 }
 
 /* ── Visualization Panel ── */
@@ -614,11 +620,34 @@
 }
 
 /* ── Responsive ── */
+
+/* Tablet: 769-1024px */
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 180px 1fr;
+  }
+  .input-panel {
+    padding: 10px 8px;
+    gap: 8px;
+  }
+  .param-row input,
+  .param-row select {
+    width: 56px;
+  }
+  .formula-equation {
+    font-size: 14px;
+  }
+  .viz-graphs-row {
+    gap: 0.75rem;
+  }
+}
+
+/* Mobile: ≤768px — stacked layout */
 @media (max-width: 768px) {
   .app {
     grid-template-rows: auto auto 1fr auto;
     height: auto;
-    min-height: 100vh;
+    min-height: 100dvh;
     overflow: visible;
   }
 
@@ -627,49 +656,247 @@
     overflow: visible;
   }
 
+  /* ── Sidebar becomes a compact horizontal toolbar ── */
   .input-panel {
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 8px;
     border-right: none;
     border-bottom: 1px solid var(--border);
-    padding: 10px 12px;
     align-items: center;
+    overflow-x: auto;
   }
 
   .input-section-label {
     display: none;
   }
 
+  .curve-tabs {
+    flex-shrink: 0;
+  }
+
+  .tab-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
   .params-group {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
+    gap: 4px;
+  }
+
+  .param-row {
+    gap: 3px;
   }
 
   .param-row label {
     min-width: auto;
+    font-size: 10px;
+  }
+
+  .param-row input,
+  .param-row select {
+    width: 48px;
+    padding: 3px 5px;
+    font-size: 12px;
+  }
+
+  .param-row select {
+    width: 52px;
   }
 
   .formula-box {
     flex-direction: row;
-    padding: 6px 10px;
+    padding: 4px 8px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .formula-label {
+    font-size: 10px;
+  }
+
+  .formula-equation {
+    font-size: 13px;
   }
 
   .generate-btn {
     margin-top: 0;
-    padding: 6px 14px;
+    padding: 5px 10px;
+    font-size: 11px;
+    flex-shrink: 0;
   }
 
+  /* ── Viz panel ── */
   .viz-panel {
-    padding: 8px;
+    padding: 4px;
+  }
+
+  .viz-top-bar {
+    padding: 4px 6px;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .period-badge {
+    padding: 2px 5px;
+  }
+
+  .period-label {
+    font-size: 10px;
+  }
+
+  .period-value {
+    font-size: 12px;
+  }
+
+  .progress-text {
+    font-size: 10px;
+    min-width: 24px;
+  }
+
+  .ctrl-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ctrl-btn-play {
+    width: 36px;
+    height: 36px;
+  }
+
+  .save-btn {
+    width: 28px !important;
+    height: 28px !important;
   }
 
   .viz-graphs-row {
     grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 
+  .graph-title {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .canvas-wrapper {
+    padding: 2px;
+  }
+
+  /* ── Table ── */
   .viz-table-row {
     flex: none;
-    height: 200px;
+    max-height: 160px;
+  }
+
+  .data-table th {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .data-table td {
+    padding: 5px 8px;
+    font-size: 11px;
+    min-width: 56px;
+  }
+
+  .data-table .data-table-header {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    padding: 5px 10px;
+  }
+
+  .header-titles h1 {
+    font-size: 14px;
+  }
+
+  .header-titles .sub {
+    font-size: 10px;
+  }
+
+  .header-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}
+
+/* Touch-friendly targets on devices without hover */
+@media (hover: none) and (pointer: coarse) {
+  .ctrl-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ctrl-btn-play {
+    width: 40px;
+    height: 40px;
+  }
+
+  .save-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .tab-btn {
+    padding: 8px 12px;
+  }
+
+  .generate-btn {
+    padding: 10px 16px;
+  }
+}
+
+/* Small phones: ≤400px */
+@media (max-width: 400px) {
+  .input-panel {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .param-row input,
+  .param-row select {
+    width: 40px;
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+
+  .param-row select {
+    width: 44px;
+  }
+
+  .formula-equation {
+    font-size: 11px;
+  }
+
+  .curve-tabs {
+    gap: 1px;
+  }
+
+  .tab-btn {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  .viz-top-bar {
+    gap: 2px;
+  }
+
+  .ctrl-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .ctrl-btn-play {
+    width: 34px;
+    height: 34px;
   }
 }
