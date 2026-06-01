@@ -2,7 +2,7 @@ import { memo, useRef, useEffect } from 'react';
 import p5 from 'p5';
 import { formatAngle } from '../utils/calculations';
 
-function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
+function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints, params }) {
   const containerRef = useRef(null);
   const p5Ref = useRef(null);
   const dataRef = useRef(allData);
@@ -90,7 +90,7 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         for (let a = 0; a < 24; a++) {
           const angle = (a * p.PI) / 12;
           const ex = p.cos(angle) * gridR * us;
-          const ey = p.sin(angle) * gridR * us;
+          const ey = -p.sin(angle) * gridR * us;
           p.line(cx, cy, cx + ex, cy + ey);
         }
 
@@ -135,23 +135,14 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         const rOuter = gridR * us;
         majorAngles.forEach(({ a, l }) => {
           const lx = cx + p.cos(a) * ld;
-          const ly = cy + p.sin(a) * ld;
+          const ly = cy - p.sin(a) * ld;
           p.text(l, lx, ly);
           const tx = cx + p.cos(a) * rOuter;
-          const ty = cy + p.sin(a) * rOuter;
+          const ty = cy - p.sin(a) * rOuter;
           p.stroke(TickColor);
           p.strokeWeight(1);
-          p.line(tx - p.cos(a) * 6, ty - p.sin(a) * 6, tx, ty);
+          p.line(tx - p.cos(a) * 6, ty + p.sin(a) * 6, tx, ty);
         });
-
-        p.textAlign(p.RIGHT, p.CENTER);
-        p.textSize(10);
-        for (let r = 1; r <= gridR; r++) {
-          p.fill(textColor);
-          p.noStroke();
-          p.text(r.toString(), cx - r * us - 5, cy);
-          p.text(r.toString(), cx - r * us - 5, cy - r * us);
-        }
 
         const endIdx = step >= 0 && step < data.length ? step : data.length - 1;
 
@@ -161,7 +152,7 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         p.beginShape();
         for (let i = 0; i <= endIdx; i++) {
           const px = cx + data[i].r * us * p.cos(data[i].theta);
-          const py = cy + data[i].r * us * p.sin(data[i].theta);
+          const py = cy - data[i].r * us * p.sin(data[i].theta);
           p.vertex(px, py);
         }
         p.endShape();
@@ -169,7 +160,7 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         if (endIdx >= 0 && endIdx < data.length) {
           const pt = data[endIdx];
           const px = cx + pt.r * us * p.cos(pt.theta);
-          const py = cy + pt.r * us * p.sin(pt.theta);
+          const py = cy - pt.r * us * p.sin(pt.theta);
           p.stroke(color);
           p.strokeWeight(2);
           p.fill(255);
@@ -182,10 +173,10 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
         const arrowInterval = Math.max(1, Math.floor(endIdx / arrowCount));
         for (let i = arrowInterval; i < endIdx && i < data.length - 1; i += arrowInterval) {
           const ax = cx + data[i].r * us * p.cos(data[i].theta);
-          const ay = cy + data[i].r * us * p.sin(data[i].theta);
+          const ay = cy - data[i].r * us * p.sin(data[i].theta);
           const ni = Math.min(i + 1, data.length - 1);
           const bx = cx + data[ni].r * us * p.cos(data[ni].theta);
-          const by = cy + data[ni].r * us * p.sin(data[ni].theta);
+          const by = cy - data[ni].r * us * p.sin(data[ni].theta);
           const angle = p.atan2(by - ay, bx - ax);
           const as2 = 6;
           p.push();
@@ -250,7 +241,12 @@ function PolarGraph({ allData, currentStep, curveColor, isDark, keyPoints }) {
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(canvas, 0, 0, temp.width, temp.height);
       const link = document.createElement('a');
-      link.download = 'polar-graph.png';
+      const p = params || {};
+      const ct = p.curveType || 'polar';
+      const eq = ct === 'rose'
+        ? `r=${p.a}·${p.func}(${p.n}θ)`
+        : `r=${p.a}${p.operator}${p.b}·${p.func}(θ)`;
+      link.download = `${ct.charAt(0).toUpperCase() + ct.slice(1)}_${eq}.png`;
       link.href = temp.toDataURL('image/png');
       document.body.appendChild(link);
       link.click();

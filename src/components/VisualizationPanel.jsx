@@ -18,6 +18,7 @@ function VisualizationPanel({
   onReset,
   onRestart,
   onTogglePlay,
+  params,
 }) {
   const hasData = allData && allData.length > 0;
   const atStart = currentStep <= 0;
@@ -60,7 +61,7 @@ function VisualizationPanel({
                 disabled={atStart}
                 title="Reset to start"
               >
-                <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path d="M4.5 4.5a1 1 0 0 1 1 1v1.672l3.428-2.468a1 1 0 0 1 1.144 1.64L7.48 9.5l2.592 2.156a1 1 0 0 1-1.144 1.64L5.5 10.828V12.5a1 1 0 1 1-2 0v-7a1 1 0 0 1 1-1Z"/><path d="M12 4.5a1 1 0 0 1 1-1h2a2 2 0 0 1 2 2v2a1 1 0 1 1-2 0v-2h-2a1 1 0 0 1-1-1Z"/></svg>
+                <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path fillRule="evenodd" d="M15 3.5a1 1 0 0 1 1 1v11a1 1 0 1 1-2 0v-11a1 1 0 0 1 1-1Z" clipRule="evenodd" /><path fillRule="evenodd" d="M4 10L12 4v12L4 10Z" clipRule="evenodd" /></svg>
               </button>
               <button
                 className="ctrl-btn"
@@ -116,6 +117,7 @@ function VisualizationPanel({
                 curveColor={curveColor}
                 isDark={isDark}
                 keyPoints={keyPoints}
+                params={params}
               />
             </div>
           </div>
