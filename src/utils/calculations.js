@@ -10,8 +10,7 @@ export function calculateCurve(params) {
 }
 
 function calculateRose(a, n, func) {
-  const isOdd = Math.abs(n % 2) === 1;
-  const end = isOdd ? pi : 2 * pi;
+  const end = 2 * pi;
   const steps = 1440;
   const step = end / steps;
   const data = [];
@@ -46,7 +45,7 @@ function calculateLimacon(a, b, func, operator) {
   return { data, period: re(2 * pi) };
 }
 
-export function extractKeyPoints(data) {
+export function extractKeyPoints(data, period) {
   if (!data || data.length === 0) return [];
 
   const raw = [];
@@ -111,7 +110,56 @@ export function extractKeyPoints(data) {
     }
   }
 
-  return deduped;
+  // Replicate first-period key points across the full data range
+  if (period && period > 0) {
+    const firstPeriodPoints = deduped.filter(pt => pt.theta < period - eps);
+    if (firstPeriodPoints.length > 0) {
+      const maxTheta = data[data.length - 1].theta;
+      const maxK = Math.ceil(maxTheta / period);
+      const replicated = [];
+      for (let k = 0; k < maxK; k++) {
+        const offset = k * period;
+        for (const pt of firstPeriodPoints) {
+          const newTheta = pt.theta + offset;
+          if (newTheta <= maxTheta + eps) {
+            replicated.push({
+              theta: newTheta,
+              r: pt.r,
+              label: pt.label,
+            });
+          }
+        }
+      }
+      replicated.sort((a, b) => a.theta - b.theta);
+      return appendPiPoints(replicated, data);
+    }
+  }
+
+  return appendPiPoints(deduped, data);
+}
+
+function findRAt(theta, data) {
+  let best = null;
+  let bestDist = Infinity;
+  for (const d of data) {
+    const dist = Math.abs(d.theta - theta);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = d;
+    }
+  }
+  return bestDist < 0.01 ? best.r : null;
+}
+
+function appendPiPoints(points, data) {
+  const result = [...points];
+  for (const target of [pi, 2 * pi]) {
+    const r = findRAt(target, data);
+    if (r != null && !result.some(p => Math.abs(p.theta - target) < 0.005)) {
+      result.push({ theta: re(target), r: round(r, 2), label: '' });
+    }
+  }
+  return result.sort((a, b) => a.theta - b.theta);
 }
 
 export function formatPeriodLabel(period) {

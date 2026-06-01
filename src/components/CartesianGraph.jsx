@@ -83,8 +83,8 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
       const rMin = Math.min(...rValues);
       const rMax = Math.max(...rValues);
       const rRange = Math.max(Math.abs(rMin), Math.abs(rMax), 1);
-      const thetaMin = allData[0].theta;
-      const thetaMax = allData[allData.length - 1].theta;
+      const thetaMin = 0;
+      const thetaMax = 2 * Math.PI;
 
       ctx.strokeStyle = grid;
       ctx.lineWidth = 1;
@@ -102,9 +102,10 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
       ctx.strokeStyle = grid;
       ctx.lineWidth = 1;
       const tickStep = Math.PI / 4;
-      const tickEnd = Math.ceil(thetaMax / tickStep) * tickStep;
-      for (let theta = 0; theta <= tickEnd + 0.001; theta += tickStep) {
-        if (theta < thetaMin - 0.001) continue;
+      const numTicks = Math.round(thetaMax / tickStep);
+      for (let k = 0; k <= numTicks; k++) {
+        const theta = k * tickStep;
+        if (theta < thetaMin) continue;
         const x = toX(theta, thetaMin, thetaMax);
         ctx.beginPath();
         ctx.moveTo(x, padding.top);
@@ -127,8 +128,9 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
       ctx.font = 'bold 11px "SF Mono", "Cascadia Code", "Consolas", monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      for (let theta = 0; theta <= tickEnd + 0.001; theta += tickStep) {
-        if (theta < thetaMin - 0.001) continue;
+      for (let k = 0; k <= numTicks; k++) {
+        const theta = k * tickStep;
+        if (theta < thetaMin) continue;
         const x = toX(theta, thetaMin, thetaMax);
         ctx.fillText(formatPi(theta), x, height - padding.bottom + 8);
       }
@@ -274,8 +276,8 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
       const rMin = Math.min(...rValues);
       const rMax = Math.max(...rValues);
       const rRange = Math.max(Math.abs(rMin), Math.abs(rMax), 1);
-      const thetaMin = allData[0].theta;
-      const thetaMax = allData[allData.length - 1].theta;
+      const thetaMin = 0;
+      const thetaMax = 2 * Math.PI;
 
       const dataTheta = (mouseX - padding.left) / plotW * (thetaMax - thetaMin) + thetaMin;
       const dataR = ((padding.top + plotH / 2 - mouseY) / (plotH / 2)) * rRange;

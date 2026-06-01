@@ -130,7 +130,7 @@ function App() {
     setColorIndex((prev) => (prev + 1) % CURVE_COLORS.length);
 
     const { data, period: p } = calculateCurve(params);
-    const points = extractKeyPoints(data);
+    const points = extractKeyPoints(data, p);
 
     allDataRef.current = data;
     stepRef.current = 0;
