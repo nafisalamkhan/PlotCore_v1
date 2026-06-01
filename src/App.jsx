@@ -5,7 +5,7 @@ import VisualizationPanel from './components/VisualizationPanel';
 import { calculateCurve, extractKeyPoints } from './utils/calculations';
 import './App.css';
 
-const CURVE_COLORS = ['#66fcf1', '#b026ff', '#ff6b6b', '#ffd93d', '#6bcbff'];
+const CURVE_COLOR = '#b026ff';
 const ANIMATION_INTERVAL_MS = 12;
 
 function getInitialTheme() {
@@ -31,7 +31,6 @@ function App() {
   const [period, setPeriod] = useState(null);
   const [currentStep, setCurrentStep] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [colorIndex, setColorIndex] = useState(0);
   const [animProgress, setAnimProgress] = useState(0);
   const [isDark, setIsDark] = useState(getInitialTheme);
 
@@ -43,12 +42,6 @@ function App() {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     try { localStorage.setItem('plotcore-theme', isDark ? 'dark' : 'light'); } catch {}
   }, [isDark]);
-
-  const toggleTheme = useCallback(() => {
-    setIsDark(prev => !prev);
-  }, []);
-
-  const curveColor = CURVE_COLORS[colorIndex % CURVE_COLORS.length];
 
   const handleParamsChange = useCallback((newParams) => {
     setParams(newParams);
@@ -127,7 +120,6 @@ function App() {
 
   const handleGenerate = useCallback(() => {
     pause();
-    setColorIndex((prev) => (prev + 1) % CURVE_COLORS.length);
 
     const { data, period: p } = calculateCurve(params);
     const points = extractKeyPoints(data, p);
@@ -151,7 +143,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header isDark={isDark} onToggleTheme={toggleTheme} />
+      <Header />
       <main className="main-content">
         <InputPanel
           curveType={curveType}
@@ -165,7 +157,7 @@ function App() {
           keyPoints={keyPoints}
           period={period}
           currentStep={currentStep}
-          curveColor={curveColor}
+          curveColor={CURVE_COLOR}
           isPlaying={isPlaying}
           animProgress={animProgress}
           isDark={isDark}
