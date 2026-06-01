@@ -3,6 +3,7 @@ import Header from './components/Header';
 import InputPanel from './components/InputPanel';
 import VisualizationPanel from './components/VisualizationPanel';
 import { calculateCurve, extractKeyPoints } from './utils/calculations';
+import logo from './assets/logo.png';
 import './App.css';
 
 const CURVE_COLOR = '#b026ff';
@@ -13,7 +14,7 @@ function getInitialTheme() {
     const stored = localStorage.getItem('plotcore-theme');
     if (stored === 'dark' || stored === 'light') return stored === 'dark';
   } catch {}
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return false;
 }
 
 function App() {
@@ -42,6 +43,21 @@ function App() {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     try { localStorage.setItem('plotcore-theme', isDark ? 'dark' : 'light'); } catch {}
   }, [isDark]);
+
+  useEffect(() => {
+    let link = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/png';
+      document.head.appendChild(link);
+    }
+    link.href = logo;
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setIsDark(prev => !prev);
+  }, []);
 
   const handleParamsChange = useCallback((newParams) => {
     setParams(newParams);
@@ -143,7 +159,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      <Header isDark={isDark} onToggleTheme={toggleTheme} />
       <main className="main-content">
         <InputPanel
           curveType={curveType}

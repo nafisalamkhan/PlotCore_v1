@@ -34,6 +34,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
   const canvasRef = useRef(null);
   const hoverRef = useRef(null);
   const darkRef = useRef(isDark);
+  const drawRef = useRef(null);
   darkRef.current = isDark;
 
   useEffect(() => {
@@ -47,7 +48,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
     function setupSize() {
       const rect = canvas.parentElement.getBoundingClientRect();
       width = rect.width - 40;
-      height = 420;
+      height = 458;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = width + 'px';
@@ -341,8 +342,7 @@ function CartesianGraph({ allData, currentStep, keyPoints, curveColor, isDark })
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('resize', handleResize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allData, currentStep, keyPoints, curveColor]);
+  }, [allData, currentStep, keyPoints, curveColor, isDark]);
 
   return (
     <div className="graph-container">
