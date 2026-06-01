@@ -47,8 +47,8 @@
 }
 
 .header-titles h1 {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--accent);
   margin: 0;
   line-height: 1.2;
@@ -58,8 +58,8 @@
 }
 
 .header-titles .sub {
-  font-size: 9px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-muted);
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -103,7 +103,7 @@
 }
 
 .input-section-label {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -124,11 +124,11 @@
 
 .tab-btn {
   flex: 1;
-  padding: 5px 8px;
+  padding: 6px 10px;
   border: none;
   border-radius: 5px;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   background: transparent;
@@ -161,7 +161,7 @@
 }
 
 .param-row label {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -172,11 +172,11 @@
 
 .param-row input,
 .param-row select {
-  width: 60px;
-  padding: 4px 6px;
+  width: 64px;
+  padding: 5px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 13px;
   font-family: var(--font-display);
   color: var(--text-primary);
   background: var(--bg-input);
@@ -209,7 +209,7 @@
 }
 
 .formula-label {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -218,7 +218,7 @@
 }
 
 .formula-equation {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--accent);
   font-family: var(--font-display);
@@ -227,12 +227,12 @@
 }
 
 .generate-btn {
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: var(--accent);
   color: #000;
   border: none;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -240,7 +240,7 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   box-shadow: 0 0 12px var(--accent-glow);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .generate-btn:hover:not(:disabled) {
@@ -288,7 +288,7 @@
 }
 
 .placeholder p {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 
@@ -317,7 +317,7 @@
 }
 
 .period-label {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -326,7 +326,7 @@
 }
 
 .period-value {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--accent);
   font-family: var(--font-display);
@@ -348,8 +348,8 @@
 }
 
 .progress-text {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text-muted);
   min-width: 28px;
   text-align: right;
@@ -474,8 +474,8 @@
 }
 
 .graph-title {
-  font-size: 9px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.6px;
@@ -526,30 +526,32 @@
 
 .data-table {
   border-collapse: collapse;
-  width: 100%;
-  table-layout: fixed;
+  min-width: 100%;
+  white-space: nowrap;
 }
 
 .data-table th {
   background: var(--bg-elevated);
   color: var(--text-muted);
-  font-weight: 600;
-  padding: 6px 12px;
+  font-weight: 700;
+  padding: 8px 14px;
   text-align: center;
   border-bottom: 1px solid var(--border);
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-family: var(--font-display);
 }
 
 .data-table td {
-  padding: 6px 12px;
+  padding: 8px 14px;
   color: var(--text-secondary);
   font-family: var(--font-display);
   font-size: 13px;
   border-right: 1px solid var(--border-light);
   text-align: center;
+  min-width: 70px;
+  white-space: nowrap;
 }
 
 .data-table td:last-child {
@@ -564,10 +566,10 @@
   background: var(--bg-elevated);
   color: var(--accent);
   font-weight: 800;
-  padding: 6px 16px;
+  padding: 8px 20px;
   text-align: center;
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: 15px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-family: var(--font-display);
@@ -589,9 +591,9 @@
 .data-table .empty-msg {
   text-align: center;
   color: var(--text-muted);
-  padding: 16px 8px;
+  padding: 24px 12px;
   font-style: italic;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .data-table tbody tr {

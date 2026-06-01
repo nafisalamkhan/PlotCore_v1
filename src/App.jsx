@@ -96,16 +96,18 @@ function App() {
   const stepForward = useCallback(() => {
     pause();
     const len = allDataRef.current ? allDataRef.current.length : 0;
-    stepRef.current = Math.min(stepRef.current + 1, len - 1);
+    const skip = Math.max(1, Math.floor(len / 50));
+    stepRef.current = Math.min(stepRef.current + skip, len - 1);
     setCurrentStep(stepRef.current);
     setAnimProgress(len > 1 ? (stepRef.current / (len - 1)) * 100 : 0);
   }, [pause]);
 
   const stepBackward = useCallback(() => {
     pause();
-    stepRef.current = Math.max(stepRef.current - 1, 0);
-    setCurrentStep(stepRef.current);
     const len = allDataRef.current ? allDataRef.current.length : 0;
+    const skip = Math.max(1, Math.floor(len / 50));
+    stepRef.current = Math.max(stepRef.current - skip, 0);
+    setCurrentStep(stepRef.current);
     setAnimProgress(len > 1 ? (stepRef.current / (len - 1)) * 100 : 0);
   }, [pause]);
 
@@ -128,7 +130,7 @@ function App() {
     setColorIndex((prev) => (prev + 1) % CURVE_COLORS.length);
 
     const { data, period: p } = calculateCurve(params);
-    const points = extractKeyPoints(data);
+    const points = extractKeyPoints(data, p);
 
     allDataRef.current = data;
     stepRef.current = 0;
@@ -172,6 +174,7 @@ function App() {
           onReset={reset}
           onRestart={restart}
           onTogglePlay={togglePlay}
+          params={params}
         />
       </main>
     </div>
