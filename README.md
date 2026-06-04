@@ -4,7 +4,7 @@ A cyberpunk-themed polar curve animator that visualizes **Rose curves** and **Li
 
 Created by **[Nafis Alam Khan](https://github.com/nafisalamkhan)**
 
-![screenshot](src/assets/logo.png)
+<img src="src/assets/logo.png" alt="PlotCore" width="50" height="50" style="border-radius: 10px;">
 
 ## Features
 
