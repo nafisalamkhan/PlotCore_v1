@@ -611,6 +611,318 @@ button, select, input {
   border-radius: 2px;
 }
 
+/* ── Header Actions ── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Learn Panel (Overlay) ── */
+.learn-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  padding: 20px;
+}
+
+.learn-panel {
+  position: relative;
+  width: 100%;
+  max-width: 880px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 36px 32px;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
+}
+
+.learn-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.learn-close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.learn-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 0 0 4px 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.3px;
+}
+
+.learn-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
+}
+
+.learn-section {
+  margin-bottom: 20px;
+}
+
+.learn-section h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  letter-spacing: 0.3px;
+}
+
+.learn-section p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.learn-section p strong {
+  color: var(--text-primary);
+}
+
+.learn-section em {
+  color: var(--accent-alt);
+  font-style: italic;
+}
+
+.learn-equation {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent-alt);
+  font-family: var(--font-display);
+  padding: 10px 14px;
+  margin: 8px 0 12px 0;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.learn-dl {
+  margin: 8px 0;
+}
+
+.learn-dl dt {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-top: 8px;
+  margin-bottom: 2px;
+  font-family: var(--font-display);
+}
+
+.learn-dl dd {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-left: 0;
+  margin-bottom: 4px;
+}
+
+.learn-examples {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 10px;
+}
+
+.learn-examples strong {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--font-display);
+}
+
+.learn-examples ul {
+  list-style: none;
+  margin-top: 6px;
+}
+
+.learn-examples li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  padding-left: 14px;
+  position: relative;
+}
+
+.learn-examples li::before {
+  content: '\2013';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.learn-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.learn-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.learn-panel::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* ── Learn Panel: Figures ── */
+.learn-figure-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.learn-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.learn-figure-svg {
+  width: 100%;
+  max-width: 140px;
+  height: auto;
+  border-radius: 6px;
+}
+
+.learn-figure-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-alt);
+  font-family: var(--font-display);
+}
+
+.learn-figure-sublabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.4;
+  white-space: pre-line;
+  font-family: var(--font-display);
+}
+
+@media (max-width: 600px) {
+  .learn-figure-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Learn Panel: Section Headings ── */
+.learn-h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 16px;
+  margin-bottom: 6px;
+  font-family: var(--font-display);
+  letter-spacing: 0.2px;
+}
+
+/* ── Learn Panel: Divider ── */
+.learn-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* ── Learn Panel: Table ── */
+.learn-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.learn-table th {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 12px;
+}
+
+.learn-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  vertical-align: top;
+}
+
+.learn-table tr:last-child td {
+  border-bottom: none;
+}
+
+.learn-table td strong {
+  color: var(--text-primary);
+}
+
+/* ── Learn Panel: Bullets ── */
+.learn-bullets {
+  list-style: none;
+  margin: 10px 0;
+}
+
+.learn-bullets li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.learn-bullets li::before {
+  content: '\25B8';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.learn-bullets li strong {
+  color: var(--text-primary);
+}
+
 /* ── Responsive ── */
 
 /* Tablet: 769-1024px */

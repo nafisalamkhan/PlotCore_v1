@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import Header from './components/Header';
 import InputPanel from './components/InputPanel';
 import VisualizationPanel from './components/VisualizationPanel';
+import LearnPanel from './components/LearnPanel';
 import { calculateCurve, extractKeyPoints } from './utils/calculations';
 import logo from './assets/logo.png';
 import './App.css';
@@ -34,6 +35,10 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [animProgress, setAnimProgress] = useState(0);
   const [isDark, setIsDark] = useState(getInitialTheme);
+  const [showLearn, setShowLearn] = useState(false);
+
+  const openLearn = useCallback(() => setShowLearn(true), []);
+  const closeLearn = useCallback(() => setShowLearn(false), []);
 
   const intervalRef = useRef(null);
   const stepRef = useRef(0);
@@ -159,7 +164,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header isDark={isDark} onToggleTheme={toggleTheme} />
+        <Header isDark={isDark} onToggleTheme={toggleTheme} onOpenLearn={openLearn} />
       <main className="main-content">
         <InputPanel
           curveType={curveType}
@@ -185,6 +190,7 @@ function App() {
           params={params}
         />
       </main>
+      {showLearn && <LearnPanel onClose={closeLearn} />}
     </div>
   );
 }

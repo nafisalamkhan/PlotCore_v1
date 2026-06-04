@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import logo from '../assets/logo.png';
 
-function Header({ isDark, onToggleTheme }) {
+function Header({ isDark, onToggleTheme, onOpenLearn }) {
   return (
     <header className="app-header">
       <div className="header-left">
@@ -11,6 +11,18 @@ function Header({ isDark, onToggleTheme }) {
           <div className="sub">Polar Curve Animator</div>
         </div>
       </div>
+      <div className="header-actions">
+      <button
+        className="theme-toggle"
+        onClick={onOpenLearn}
+        title="Learn about polar curves"
+        aria-label="Open learn panel"
+      >
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+          <path d="M10.362 1.093a.75.75 0 0 0-.724 0l-7.5 4.125a.75.75 0 0 0 0 1.328l7.5 4.125a.75.75 0 0 0 .724 0l7.5-4.125a.75.75 0 0 0 0-1.328l-7.5-4.125Z" />
+          <path d="M2.5 8.757v4.375a.75.75 0 0 0 1.5 0V9.956l5.25 2.888a.75.75 0 0 0 .724 0l5.25-2.888v3.176a.75.75 0 0 0 1.5 0V8.757l-6.138 3.376a.75.75 0 0 1-.724 0L2.5 8.757Z" />
+        </svg>
+      </button>
       <button
         className="theme-toggle"
         onClick={onToggleTheme}
@@ -27,6 +39,7 @@ function Header({ isDark, onToggleTheme }) {
           </svg>
         )}
       </button>
+      </div>
     </header>
   );
 }
