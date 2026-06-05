@@ -4,6 +4,8 @@ A cyberpunk-themed polar curve animator that visualizes **Rose curves** and **Li
 
 Created by **[Nafis Alam Khan](https://github.com/nafisalamkhan)**
 
+[![Vercel](https://img.shields.io/badge/deployed%20on-Vercel-000?style=flat&logo=vercel)](https://plot-core-v1.vercel.app/)
+
 <img src="src/assets/logo.png" alt="PlotCore" width="50" height="50" style="border-radius: 10px;">
 
 ## Features
@@ -15,6 +17,7 @@ Created by **[Nafis Alam Khan](https://github.com/nafisalamkhan)**
 - **Key points data table** — horizontal table showing `r` and `θ` values for critical points, scoped per period and replicated across the full range
 - **Dark/Light theme toggle** — cyberpunk dark theme (`#66fcf1` / `#b026ff`) and clean light theme
 - **Download images** — save polar graph as PNG (equation included in filename)
+- **Learn panel** — built-in educational guide with SVG diagrams explaining polar curves
 - **Responsive** — adapts from desktop to tablet to mobile with touch-friendly targets
 
 ## Usage
@@ -24,7 +27,12 @@ Created by **[Nafis Alam Khan](https://github.com/nafisalamkhan)**
 3. Click **Generate** to compute and start animation
 4. Use the control buttons to play/pause/step through the trace
 5. Toggle dark/light mode with the sun/moon button in the header
-6. Click the download icon on the polar graph to save as PNG
+6. Click the book icon to open the learn panel for educational content
+7. Click the download icon on the polar graph to save as PNG
+
+## Deploy
+
+The site is live at **[https://plot-core-v1.vercel.app/](https://plot-core-v1.vercel.app/)**.
 
 ## Tech Stack
 
